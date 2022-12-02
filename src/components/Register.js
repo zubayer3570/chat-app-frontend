@@ -1,21 +1,15 @@
-import axios from 'axios';
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
-const Login = ({socket}) => {
+const Register = ({ socket }) => {
     const navigate = useNavigate()
-    const userCredendtials = JSON.parse(localStorage.getItem("user-credentials"))
-    useEffect(()=>{
-        if(userCredendtials?.data?._id){
-            navigate('/inbox')
-        }
-    }, [])
-    const login = async (e) => {
+    const register = async (e) => {
         try {
             e.preventDefault()
             const username = e.target.username.value
             const password = e.target.password.value
-            await axios.post('http://localhost:5000/login', { username, password })
+            await axios.post('http://localhost:5000/create-user', { username, password })
                 .then((res) => {
                     localStorage.setItem("user-credentials", JSON.stringify({ data: res.data }))
                     socket.emit('add_active_user', res.data._id)
@@ -27,12 +21,12 @@ const Login = ({socket}) => {
         }
     }
     return (
-        <form onSubmit={login} className="flex flex-col items-center mt-[100px]">
+        <form onSubmit={register} className="flex flex-col items-center mt-[100px]">
             <input type="text" name="username" className="input input-bordered min-w-[500px]" placeholder="enter your username" required />
             <input type="password" name="password" className="input input-bordered min-w-[500px] m-2" placeholder="enter your password" required />
-            <input type="submit" value="Login" className="btn min-w-[500px]" />
+            <input type="submit" value="Register" className="btn min-w-[500px]" />
         </form>
     );
 };
 
-export default Login;
+export default Register;
