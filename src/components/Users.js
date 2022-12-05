@@ -2,23 +2,25 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import UserCard from './UserCard';
-import { CurrentConversationContext } from '../App';
+import { AllContext } from '../App';
 
 const Users = () => {
-    const { setCurrentConversation } = useContext(CurrentConversationContext)
+    const { userContext, currentConversationContext, receiverContext } = useContext(AllContext)
     const navigate = useNavigate()
     const [users, setUsers] = useState([])
     useEffect(() => {
         axios.get("http://localhost:5000/get-users").then((res) => setUsers(res.data))
     }, [])
     const handler = async (receiverID) => {
-        const userID = JSON.parse(localStorage.getItem('user-credentials')).data._id
+        const userID = userContext.user._id
+        await axios.get(`http://localhost:5000/get-user/${receiverID}`).then((res) => {
+            receiverContext.setReceiver(res.data)
+        })
         await axios.post('http://localhost:5000/check-conversation', { userID, receiverID }).then((res) => {
             if (res.data._id) {
-                setCurrentConversation(res.data)
+                currentConversationContext.setCurrentConversation(res.data)
             }
-            console.log(res.data)
-            navigate(`/inbox?ru=${receiverID}`)
+            navigate(`/inbox`)
         })
     }
     return (
@@ -26,7 +28,7 @@ const Users = () => {
             <p className='font-bold text-[25px] py-4 text-green-500 text-center'>All Users</p>
             <div className='pb-4'>
                 {
-                    users.map((user) => <div onClick={() => handler(user._id)} key={user._id}><UserCard username={user.username} /></div>)
+                    users.map((receiver) => <div onClick={() => handler(receiver._id)} key={receiver._id}><UserCard username={receiver.username} /></div>)
                 }
             </div>
         </div>

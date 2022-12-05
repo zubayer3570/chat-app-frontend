@@ -1,24 +1,17 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import React, { useContext } from 'react';
 import ChatBox from './ChatBox';
 import Conversation from './Conversation';
 
-const Inbox = ({ socket }) => {
-    const [selectedConversationID, setSelectedConversationID] = useState('')
-    const queryParams = useLocation().search
-    const receiverID = new URLSearchParams(queryParams).get('ru')
-    const getSelectedConversationID = (id) => {
-        setSelectedConversationID(id)
-    }
+
+const Inbox = () => {
     return (
         <>
             <div className='grid grid-cols-5'>
                 <div>
-                    <Conversation getSelectedConversationID={getSelectedConversationID} />
+                    <Conversation />
                 </div>
                 <div className='col-span-4'>
-                    <ChatBox selectedConversationID={selectedConversationID._id} receiverID={receiverID} />
+                    <ChatBox />
                 </div>
             </div>
         </>

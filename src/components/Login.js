@@ -1,8 +1,10 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AllContext } from '../App';
 
-const Login = ({socket}) => {
+const Login = () => {
+    const {socket} = useContext(AllContext)
     const navigate = useNavigate()
     const userCredendtials = JSON.parse(localStorage.getItem("user-credentials"))
     useEffect(()=>{

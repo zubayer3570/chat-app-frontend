@@ -1,32 +1,42 @@
 import { Routes, Route, Link } from 'react-router-dom'
 import Register from './components/Register';
 import Inbox from './components/Inbox';
-import { io } from 'socket.io-client'
 import Login from './components/Login';
 import Users from './components/Users';
 import { createContext, useState } from 'react';
+import { io } from 'socket.io-client';
 
 const socket = io("http://localhost:5000/")
 
-
-export const CurrentConversationContext = createContext({
-  currentConversation: {},
-  setCurrentConversation: () => { }
+export const AllContext = createContext({
+  userContext: {},
+  receiverContext: {},
+  currentConversationContext: {},
+  socketContext: {}
 })
 
 function App() {
-  const [currentConversation, setCurrentConversation] = useState('hi')
-  const value = { currentConversation, setCurrentConversation }
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user-credentials"))?.data)
+  const [receiver, setReceiver] = useState('')
+  const [currentConversation, setCurrentConversation] = useState('')
+  const value = {
+    userContext: { user, setUser },
+    receiverContext: { receiver, setReceiver },
+    currentConversationContext: { currentConversation, setCurrentConversation },
+    socketContext: { socket }
+  }
+
+
   return (
     <>
-      <CurrentConversationContext.Provider value={value}>
+      <AllContext.Provider value={value} >
         <Routes>
-          <Route path='/' element={<Login socket={socket} />} />
-          <Route path='/Register' element={<Register socket={socket} />} />
-          <Route path='/users' element={<Users socket={socket} />} />
-          <Route path='/inbox' element={<Inbox socket={socket} />} />
+          <Route path='/' element={<Login />} />
+          <Route path='/Register' element={<Register />} />
+          <Route path='/users' element={<Users />} />
+          <Route path='/inbox' element={<Inbox />} />
         </Routes>
-      </CurrentConversationContext.Provider>
+      </AllContext.Provider>
     </>
   );
 }
