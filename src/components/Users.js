@@ -9,14 +9,14 @@ const Users = () => {
     const navigate = useNavigate()
     const [users, setUsers] = useState([])
     useEffect(() => {
-        axios.get("http://localhost:5000/get-users").then((res) => setUsers(res.data))
+        axios.get("https://chat-app-pzz6.onrender.com/get-users").then((res) => setUsers(res.data))
     }, [])
     const handler = async (receiverID) => {
         const userID = userContext.user._id
-        await axios.get(`http://localhost:5000/get-user/${receiverID}`).then((res) => {
+        await axios.get(`https://chat-app-pzz6.onrender.com/get-user/${receiverID}`).then((res) => {
             receiverContext.setReceiver(res.data)
         })
-        await axios.post('http://localhost:5000/check-conversation', { userID, receiverID }).then((res) => {
+        await axios.post('https://chat-app-pzz6.onrender.com/check-conversation', { userID, receiverID }).then((res) => {
             if (res.data._id) {
                 currentConversationContext.setCurrentConversation(res.data)
             }

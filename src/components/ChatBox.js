@@ -34,7 +34,7 @@ const ChatBox = () => {
         }
         const conversationID = currentConversationContext.currentConversation._id
         const newMessage = { sender, receiver, text, conversationID }
-        await axios.post(`http://localhost:5000/send-message`, newMessage).then(res => { })
+        await axios.post(`https://chat-app-pzz6.onrender.com/send-message`, newMessage).then(res => { })
     }
     return (
         <div id='inbox' className='flex flex-col h-[100vh] bg-[black] bg-green-200 px-4'>

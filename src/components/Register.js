@@ -9,7 +9,7 @@ const Register = ({ socket }) => {
             e.preventDefault()
             const username = e.target.username.value
             const password = e.target.password.value
-            await axios.post('http://localhost:5000/create-user', { username, password })
+            await axios.post('https://chat-app-pzz6.onrender.com/create-user', { username, password })
                 .then((res) => {
                     localStorage.setItem("user-credentials", JSON.stringify({ data: res.data }))
                     socket.emit('add_active_user', res.data._id)
