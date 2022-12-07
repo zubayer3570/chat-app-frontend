@@ -1,15 +1,25 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { createRef, useContext, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AllContext } from '../App';
 import Message from './Message';
 
 const ChatBox = () => {
+    const messageSection = useRef()
+    const [scrollHeight, setScrollHeight] = useState(500)
     const { userContext, receiverContext, currentConversationContext, socketContext } = useContext(AllContext)
-    // socket.emit('new_active_user', {userID: userContext.user._id, socketID: socket.id})
-    socketContext.socket.on("connect", () => {
-        socketContext.socket.emit('new_active_user', { userID: userContext.user._id || 1, socketID: socketContext.socket.id })
-    })
+    useEffect(() => {
+        // setScrollHeight(messageSection.current?.scrollHeight)
+        messageSection.current?.scrollIntoView(messageSection.current?.scrollHeight)
+    }, [currentConversationContext])
+    useEffect(() => {
+        socketContext.socket.on("connect", () => {
+            socketContext.socket.emit('new_active_user', { userID: userContext.user._id || 1, socketID: socketContext.socket.id })
+        })
+        socketContext.socket.on('new_message', (data) => {
+            currentConversationContext.setCurrentConversation(data)
+        })
+    }, [socketContext])
     //sending message
     const sendMessage = async (e) => {
         e.preventDefault()
@@ -36,11 +46,12 @@ const ChatBox = () => {
                     <button className='p-2 rounded shadow-custom-1'>Logout</button>
                 </div>
             </div>
-            <div className='flex-grow bg-blue-100 overflow-y-scroll scrollbar-hidden'>
+            <div className='flex-grow bg-blue-100 overflow-y-scroll'>
                 {
                     // displaying message
                     currentConversationContext?.currentConversation.messages?.map(message => <Message sender={message.sender.senderUsername} message={message.text} key={message._id} />)
                 }
+                <div ref={messageSection}></div>
             </div>
             <div className='mb-8'>
                 <form onSubmit={sendMessage} className='flex'>
