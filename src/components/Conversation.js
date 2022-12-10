@@ -12,7 +12,7 @@ const Conversation = () => {
 
     // getting conversations and conversation people info
     useEffect(() => {
-        axios.get(`http://localhost:5000/get-conversations/${userID}`).then(res => setConversations(res.data))
+        axios.get(`https://chat-app-pzz6.onrender.com/get-conversations/${userID}`).then(res => setConversations(res.data))
     }, [])
 
     return (

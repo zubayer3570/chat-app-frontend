@@ -6,7 +6,7 @@ import Users from './components/Users';
 import { createContext, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io("http://localhost:5000/")
+const socket = io("https://chat-app-pzz6.onrender.com/")
 
 export const AllContext = createContext({
   userContext: {},

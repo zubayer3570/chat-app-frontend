@@ -13,7 +13,7 @@ const ChatBox = () => {
 
     //getting messages, quering by conversation id
     useEffect(() => {
-        axios.get(`http://localhost:5000/get-messages/${currentConversationContext.currentConversation._id}`).then(res => setMessages(res.data))
+        axios.get(`https://chat-app-pzz6.onrender.com/get-messages/${currentConversationContext.currentConversation._id}`).then(res => setMessages(res.data))
     }, [currentConversationContext])
 
 
@@ -40,7 +40,7 @@ const ChatBox = () => {
         const newMessage = { sender, receiver, text, conversationID }
 
         // in the sender end, we are adding the message by the http response, and in the receiver side we are sending that newly instered message via socket.io
-        await axios.post(`http://localhost:5000/send-message`, newMessage).then(res => setMessages([...messages, res.data]))
+        await axios.post(`https://chat-app-pzz6.onrender.com/send-message`, newMessage).then(res => setMessages([...messages, res.data]))
     }
     return (
         <div id='inbox' className='flex flex-col h-[100vh] bg-[black] bg-green-200 px-4'>
