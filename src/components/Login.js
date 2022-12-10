@@ -17,7 +17,7 @@ const Login = () => {
             e.preventDefault()
             const username = e.target.username.value
             const password = e.target.password.value
-            await axios.post('https://chat-app-pzz6.onrender.com/login', { username, password })
+            await axios.post('http://localhost:5000/login', { username, password })
                 .then((res) => {
                     localStorage.setItem("user-credentials", JSON.stringify({ data: res.data }))
                     socketContext.socket.emit('add_active_user', res.data._id)

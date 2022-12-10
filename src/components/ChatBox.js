@@ -6,20 +6,24 @@ import Message from './Message';
 
 const ChatBox = () => {
     const messageSection = useRef()
-    const [scrollHeight, setScrollHeight] = useState(500)
     const { userContext, receiverContext, currentConversationContext, socketContext } = useContext(AllContext)
+    // console.log(receiverContext)
+    const [messages, setMessages] = useState([])
+
+
+    //getting messages, quering by conversation id
     useEffect(() => {
-        // setScrollHeight(messageSection.current?.scrollHeight)
-        messageSection.current?.scrollIntoView(messageSection.current?.scrollHeight)
+        axios.get(`http://localhost:5000/get-messages/${currentConversationContext.currentConversation._id}`).then(res => setMessages(res.data))
     }, [currentConversationContext])
+
+
+    socketContext.socket.on('new_message', (data) => setMessages([...messages, data]))
+
     useEffect(() => {
-        socketContext.socket.on("connect", () => {
-            socketContext.socket.emit('new_active_user', { userID: userContext.user._id || 1, socketID: socketContext.socket.id })
-        })
-        socketContext.socket.on('new_message', (data) => {
-            currentConversationContext.setCurrentConversation(data)
-        })
-    }, [socketContext])
+        messageSection.current?.scrollIntoView(messageSection.current?.scrollHeight)
+    }, [messages])
+
+
     //sending message
     const sendMessage = async (e) => {
         e.preventDefault()
@@ -34,7 +38,9 @@ const ChatBox = () => {
         }
         const conversationID = currentConversationContext.currentConversation._id
         const newMessage = { sender, receiver, text, conversationID }
-        await axios.post(`https://chat-app-pzz6.onrender.com/send-message`, newMessage).then(res => { })
+
+        // in the sender end, we are adding the message by the http response, and in the receiver side we are sending that newly instered message via socket.io
+        await axios.post(`http://localhost:5000/send-message`, newMessage).then(res => setMessages([...messages, res.data]))
     }
     return (
         <div id='inbox' className='flex flex-col h-[100vh] bg-[black] bg-green-200 px-4'>
@@ -49,7 +55,7 @@ const ChatBox = () => {
             <div className='flex-grow bg-blue-100 overflow-y-scroll'>
                 {
                     // displaying message
-                    currentConversationContext?.currentConversation.messages?.map(message => <Message sender={message.sender.senderUsername} message={message.text} key={message._id} />)
+                    messages.map(message => <Message sender={message.sender.senderUsername} message={message.text} key={message._id} />)
                 }
                 <div ref={messageSection}></div>
             </div>

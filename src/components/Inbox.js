@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
+import { AllContext } from '../App';
 import ChatBox from './ChatBox';
 import Conversation from './Conversation';
 
 
 const Inbox = () => {
+
     return (
         <>
             <div className='grid grid-cols-5'>
