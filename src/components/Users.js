@@ -5,7 +5,7 @@ import UserCard from './UserCard';
 import { AllContext } from '../App';
 
 const Users = () => {
-    const { userContext, currentConversationContext, receiverContext } = useContext(AllContext)
+    const { userContext, currentConversationContext, receiverContext, socketContext } = useContext(AllContext)
     const navigate = useNavigate()
     const [users, setUsers] = useState([])
 
@@ -19,6 +19,7 @@ const Users = () => {
         const userID = userContext.user._id
         axios.post('http://localhost:5000/get-conversation', { participants: [userID, receiver._id] }).then((res) => {
             currentConversationContext.setCurrentConversation(res.data.conversation)
+            socketContext.socket.emit('new_opened_conversation', { openedConversationID: res.data.conversation._id, userID })
             receiverContext.setReceiver(res.data.conversation.participants[0]._id == userID ? res.data.conversation.participants[1] : res.data.conversation.participants[0])
             navigate('/')
         })
