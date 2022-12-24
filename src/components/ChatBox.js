@@ -18,7 +18,10 @@ const ChatBox = () => {
     }, [currentConversationContext])
 
 
-    socketContext.socket.on('new_message', (data) => setMessages([...messages, data]))
+    socketContext.socket.on('new_message', (data) => {
+        console.log(data)
+        setMessages([...messages, data])
+    })
 
     useEffect(() => {
         messageSection.current?.scrollIntoView(messageSection.current?.scrollHeight)

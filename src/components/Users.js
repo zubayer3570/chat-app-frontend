@@ -17,9 +17,7 @@ const Users = () => {
     // getting the current conversation
     const handler = (receiver) => {
         const userID = userContext.user._id
-        console.log(userID)
         axios.post('http://localhost:5000/get-conversation', { participants: [userID, receiver._id] }).then((res) => {
-            console.log(res.data)
             currentConversationContext.setCurrentConversation(res.data.conversation)
             receiverContext.setReceiver(res.data.conversation.participants[0]._id == userID ? res.data.conversation.participants[1] : res.data.conversation.participants[0])
             navigate('/')

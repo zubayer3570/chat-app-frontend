@@ -13,12 +13,11 @@ const Conversation = () => {
     // getting conversations and conversation people info
     useEffect(() => {
         axios.get(`http://localhost:5000/get-conversations/${userID}`).then(res => setConversations(res.data))
-        socketContext.socket.on("new_conversation", () => {
-            axios.get(`http://localhost:5000/get-conversations/${userID}`).then(res => setConversations(res.data))
-        })
     }, [])
 
-
+    socketContext.socket.on('new_conversation', (data) => {
+        setConversations([...conversations, data])
+    })
 
     const handler = (conversation) => {
         currentConversationContext.setCurrentConversation(conversation)
