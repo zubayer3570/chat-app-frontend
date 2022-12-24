@@ -11,17 +11,18 @@ const Users = () => {
 
     // getting all users
     useEffect(() => {
-        axios.get("https://chat-app-pzz6.onrender.com/get-users").then((res) => setUsers(res.data))
+        axios.get(`http://localhost:5000/get-users/${userContext.user._id}`).then((res) => setUsers(res.data))
     }, [])
 
     // getting the current conversation
-    const handler = async (receiver) => {
+    const handler = (receiver) => {
         const userID = userContext.user._id
-        await axios.post('https://chat-app-pzz6.onrender.com/get-conversation', { participants: [userID, receiver._id] }).then((res) => {
+        console.log(userID)
+        axios.post('http://localhost:5000/get-conversation', { participants: [userID, receiver._id] }).then((res) => {
+            console.log(res.data)
             currentConversationContext.setCurrentConversation(res.data.conversation)
-            console.log(res.data.conversation)
             receiverContext.setReceiver(res.data.conversation.participants[0]._id == userID ? res.data.conversation.participants[1] : res.data.conversation.participants[0])
-            navigate('/inbox')
+            navigate('/')
         })
     }
     return (
@@ -29,7 +30,7 @@ const Users = () => {
             <p className='font-bold text-[25px] py-4 text-green-500 text-center'>All Users</p>
             <div className='pb-4'>
                 {
-                    users.map((receiver) => <div onClick={() => handler(receiver)} key={receiver._id}><UserCard username={receiver.username} /></div>)
+                    users.map((receiver) => <div onClick={() => handler(receiver)} key={receiver._id}><UserCard userData={receiver} /></div>)
                 }
             </div>
         </div>

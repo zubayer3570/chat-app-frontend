@@ -6,7 +6,7 @@ import Users from './components/Users';
 import { createContext, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io("https://chat-app-pzz6.onrender.com/")
+const socket = io("http://localhost:5000/")
 
 export const AllContext = createContext({
   userContext: {},
@@ -29,7 +29,7 @@ function App() {
 
   //socket connection
   socket.on("connect", () => {
-    socket.emit('new_active_user', { userID: user._id, socketID: socket.id })
+    socket.emit('new_active_user', { userID: user?._id, socketID: socket?.id })
   })
 
 
@@ -37,10 +37,10 @@ function App() {
     <>
       <AllContext.Provider value={value} >
         <Routes>
-          <Route path='/' element={<Login />} />
+          <Route path='/' element={<Inbox />} />
+          <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/users' element={<Users />} />
-          <Route path='/inbox' element={<Inbox />} />
         </Routes>
       </AllContext.Provider>
     </>
