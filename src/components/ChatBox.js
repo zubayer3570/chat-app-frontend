@@ -8,19 +8,27 @@ const ChatBox = () => {
     const navigate = useNavigate()
     const messageSection = useRef()
     const { userContext, receiverContext, currentConversationContext, socketContext } = useContext(AllContext)
+
+    
     // console.log(receiverContext)
     const [messages, setMessages] = useState([])
 
 
     //getting messages, quering by conversation id
     useEffect(() => {
-        axios.get(`http://localhost:5000/get-messages/${currentConversationContext.currentConversation._id}`).then(res => setMessages(res.data))
+        axios.get(`https://chat-app-pzz6.onrender.com/get-messages/${currentConversationContext.currentConversation._id}`).then(res => setMessages(res.data))
     }, [currentConversationContext])
 
 
     socketContext.socket.on('new_message', (data) => {
-        console.log(data)
         setMessages([...messages, data])
+    })
+    socketContext.socket.on('User_id_matched', (data) => {
+        
+        console.log(data)
+    })
+    socketContext.socket.on('Conversation_id_matched', (data) => {
+        console.log(data)
     })
 
     useEffect(() => {
@@ -46,7 +54,9 @@ const ChatBox = () => {
         const newMessage = { sender, receiver, text, conversationID }
 
         // in the sender end, we are adding the message by the http response, and in the receiver side we are sending that newly instered message via socket.io
-        await axios.post(`http://localhost:5000/send-message`, newMessage).then(res => setMessages([...messages, res.data]))
+        await axios.post(`https://chat-app-pzz6.onrender.com/send-message`, newMessage).then(res => {
+            socketContext.socket.emit('new_message', res.data)
+        })
     }
     const logout = () => {
         localStorage.removeItem("user-credentials")

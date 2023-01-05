@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios'
+import axios from 'axios';
 import UserCard from './UserCard';
 import { AllContext } from '../App';
+
+
 
 const Conversation = () => {
     const { userContext, receiverContext, currentConversationContext, socketContext } = useContext(AllContext)
@@ -12,7 +14,10 @@ const Conversation = () => {
 
     // getting conversations and conversation people info
     useEffect(() => {
-        axios.get(`http://localhost:5000/get-conversations/${userID}`).then(res => setConversations(res.data))
+        axios.get(`https://chat-app-pzz6.onrender.com/get-conversations/${userID}`).then(res => {
+            setConversations(res.data)
+            socketContext.socket.emit('new_conversation', res.data)
+        })
     }, [])
 
     socketContext.socket.on('new_conversation', (data) => {

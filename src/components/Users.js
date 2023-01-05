@@ -11,13 +11,13 @@ const Users = () => {
 
     // getting all users
     useEffect(() => {
-        axios.get(`http://localhost:5000/get-users/${userContext.user._id}`).then((res) => setUsers(res.data))
+        axios.get(`https://chat-app-pzz6.onrender.com/get-users/${userContext.user._id}`).then((res) => setUsers(res.data))
     }, [])
 
     // getting the current conversation
     const handler = (receiver) => {
         const userID = userContext.user._id
-        axios.post('http://localhost:5000/get-conversation', { participants: [userID, receiver._id] }).then((res) => {
+        axios.post('https://chat-app-pzz6.onrender.com/get-conversation', { participants: [userID, receiver._id] }).then((res) => {
             currentConversationContext.setCurrentConversation(res.data.conversation)
             socketContext.socket.emit('new_opened_conversation', { openedConversationID: res.data.conversation._id, userID })
             receiverContext.setReceiver(res.data.conversation.participants[0]._id == userID ? res.data.conversation.participants[1] : res.data.conversation.participants[0])

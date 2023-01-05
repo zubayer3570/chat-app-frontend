@@ -15,7 +15,7 @@ const Register = () => {
             formData.append('image', e.target.image.files[0])
             console.log(e.target.image.files[0])
             axios.post("https://api.imgbb.com/1/upload?key=994885ead587980a17dd092bc9155017", formData).then(res => {
-                axios.post('http://localhost:5000/create-user', { profileImg: res.data.data.image.url, username, password })
+                axios.post('https://chat-app-pzz6.onrender.com/create-user', { profileImg: res.data.data.image.url, username, password })
                     .then((res) => {
                         localStorage.setItem("user-credentials", JSON.stringify({ data: res.data }))
                         socketContext.socket.emit('add_active_user', res.data._id)

@@ -3,10 +3,10 @@ import Register from './components/Register';
 import Inbox from './components/Inbox';
 import Login from './components/Login';
 import Users from './components/Users';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io("http://localhost:5000/")
+const socket = io("https://chat-app-pzz6.onrender.com/")
 
 export const AllContext = createContext({
   userContext: {},
@@ -16,10 +16,9 @@ export const AllContext = createContext({
 })
 
 function App() {
-
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user-credentials"))?.data)
   const [receiver, setReceiver] = useState('')
-  const [currentConversation, setCurrentConversation] = useState('')
+  const [currentConversation, setCurrentConversation] = useState('demo')
   const value = {
     userContext: { user, setUser },
     receiverContext: { receiver, setReceiver },
@@ -29,9 +28,8 @@ function App() {
 
   //socket connection
   socket.on("connect", () => {
-    socket.emit('new_active_user', { userID: user?._id, socketID: socket?.id })
+    socket.emit('new_active_user', { userID: user?._id, socketID: socket?.id, openedConverstaionID: currentConversation._id })
   })
-
 
   return (
     <>
