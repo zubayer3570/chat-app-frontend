@@ -22,7 +22,7 @@ const ConversationCard = ({ conversation }) => {
                 </div>
                 <div>
                     <p className='font-bold'>{target?.name}</p>
-                    <p className=''>{conversation?.lastMessage.text}</p>
+                    <p className=''>{conversation?.lastMessage.text.slice(0, 20)}</p>
                 </div>
             </div>
             {

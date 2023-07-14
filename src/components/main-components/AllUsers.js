@@ -6,7 +6,6 @@ const AllUsers = () => {
     const { allUsers } = useSelector(state => state.users)
     const dispatch = useDispatch()
     useEffect(() => { dispatch(allUsersThunk()) }, [])
-    
     return (
         <div>
             {

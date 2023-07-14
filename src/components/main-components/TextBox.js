@@ -5,13 +5,12 @@ import Text from './Text';
 
 const TextBox = () => {
     const { loggedInUser, receiver } = useSelector(state => state.users)
-    const { selectecdConversation } = useSelector(state => state.conversation)
     const { texts } = useSelector(state => state.texts)
     const dispatch = useDispatch()
     const handleSend = (e) => {
         e.preventDefault()
         const text = e.target.text.value
-        dispatch(sendTextThunk({ sender: loggedInUser, receiver, text, conversationID: selectecdConversation._id, unread: true }))
+        dispatch(sendTextThunk({ sender: loggedInUser, receiver, text, unread: true }))
         e.target.reset()
     }
     useEffect(() => {
@@ -33,7 +32,7 @@ const TextBox = () => {
                         <p className='font-bold'>{receiver.name}</p>
                     </div>
                 </div>
-                <div className='h-[80vh] overflow-scroll' >
+                <div className='h-[80vh] overflow-auto' >
                     {
                         texts?.map(text => <Text text={text} key={text._id} />)
                     }

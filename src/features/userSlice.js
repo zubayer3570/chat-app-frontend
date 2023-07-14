@@ -46,6 +46,25 @@ const userSlice = createSlice({
                 return conversation
             })
             return { ...state, loggedInUser: { ...state.loggedInUser, conversations: newConversation } }
+        },
+        updateActiveStatus: (state, action) => {
+
+
+            // have to start working from here
+
+
+            const updated = state.allUsers.map(user => {
+                action.payload.forEach(activeUserEmail => {
+                    if (activeUserEmail == user.email) {
+                        user = { ...user, active: true }
+                    } else {
+                        user = { ...user, active: false }
+                    }
+                })
+                return user
+            })
+            console.log(state.allUsers)
+            return { ...state, allUsers: updated }
         }
     },
     extraReducers: (builder) => {
@@ -93,5 +112,5 @@ const userSlice = createSlice({
         })
     }
 })
-export const { selectReceiver, addConversationFromSocket, updateLastMessage } = userSlice.actions
+export const { selectReceiver, addConversationFromSocket, updateLastMessage, updateActiveStatus } = userSlice.actions
 export default userSlice.reducer

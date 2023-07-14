@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { addConversationFromSocket, loginThunk, updateLastMessage } from '../../features/userSlice';
+import { addConversationFromSocket, loginThunk, updateActiveStatus, updateLastMessage } from '../../features/userSlice';
 import ConversationCard from '../main-components/ConversationCard';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
@@ -28,7 +28,7 @@ const Inbox = () => {
         socket.connect()
 
         socket.on("connect", () => {
-            socket.emit("new_user", { userEmail: loggedInUser.email, socketID: socket.id })
+            socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
         })
 
         socket.on("new_conversation", (data) => {
@@ -39,6 +39,10 @@ const Inbox = () => {
             dispatch(updateLastMessage(data))
         })
 
+        socket.on("active_status_updated", (data) => {
+            dispatch(updateActiveStatus(data))
+        })
+        
 
     }, [])
     return (
