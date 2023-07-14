@@ -7,10 +7,8 @@ export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message) =
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationID) => {
     const res = await axios.post("http://localhost:5000/get-texts", { conversationID })
-    console.log(res.data)
     return res.data
 })
-
 
 const textSlice = createSlice({
     name: "textSlice",
@@ -19,7 +17,9 @@ const textSlice = createSlice({
         loading: false
     },
     reducers: {
-        hi: () => { }
+        socketAddText: (state, action) => {
+            return { ...state, texts: [...state.texts, action.payload] }
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(getTextsThunk.pending, (state) => {
@@ -30,5 +30,7 @@ const textSlice = createSlice({
         })
     }
 })
+
+export const { socketAddText } = textSlice.actions
 
 export default textSlice.reducer

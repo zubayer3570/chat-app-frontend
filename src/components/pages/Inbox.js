@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginThunk } from '../../features/userSlice';
+import { addConversationFromSocket, loginThunk, updateLastMessage } from '../../features/userSlice';
 import ConversationCard from '../main-components/ConversationCard';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
+import { socket } from '../../socket';
+
 
 const Inbox = () => {
     const navigate = useNavigate()
@@ -20,6 +22,25 @@ const Inbox = () => {
             navigate('/login')
         }
     }, [loggedInUser])
+
+    //socket connection
+    useEffect(() => {
+        socket.connect()
+
+        socket.on("connect", () => {
+            socket.emit("new_user", { userEmail: loggedInUser.email, socketID: socket.id })
+        })
+
+        socket.on("new_conversation", (data) => {
+            dispatch(addConversationFromSocket(data))
+        })
+
+        socket.on("new_last_message", (data) => {
+            dispatch(updateLastMessage(data))
+        })
+
+
+    }, [])
     return (
         <div className='grid grid-cols-4 min-h-[100vh]'>
             <div className='col-span-1 bg-red-500'>

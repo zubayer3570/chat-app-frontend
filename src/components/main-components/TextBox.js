@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendTextThunk } from '../../features/textSlice';
 import Text from './Text';
@@ -7,15 +7,20 @@ const TextBox = () => {
     const { loggedInUser, receiver } = useSelector(state => state.users)
     const { texts } = useSelector(state => state.texts)
     const dispatch = useDispatch()
-    if (!receiver._id) {
-        return
-    }
     const handleSend = (e) => {
         e.preventDefault()
         const text = e.target.text.value
         dispatch(sendTextThunk({ sender: loggedInUser, receiver, text, unread: true }))
         e.target.reset()
     }
+    useEffect(() => {
+        document.getElementById("tool")?.scrollIntoView()
+    }, [texts])
+
+    if (!receiver?._id) {
+        return
+    }
+
     return (
         <>
             <div className='relative h-[100vh]'>
@@ -27,10 +32,11 @@ const TextBox = () => {
                         <p className='font-bold'>{receiver.name}</p>
                     </div>
                 </div>
-                <div>
+                <div className='h-[80vh] overflow-scroll' >
                     {
                         texts?.map(text => <Text text={text} key={text._id} />)
                     }
+                    <div id='tool' ></div>
                 </div>
                 <form onSubmit={handleSend} className='absolute flex bottom-0 w-full pb-4'>
                     <input type="text" name="text" className='grow h-[50px]' />
