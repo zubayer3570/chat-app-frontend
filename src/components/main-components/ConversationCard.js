@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTextsThunk } from '../../features/textSlice';
 import { selectReceiver, updateUnreadThunk } from '../../features/userSlice';
+import { selectConversation } from '../../features/conversationSlice';
 
 const ConversationCard = ({ conversation }) => {
     const dispatch = useDispatch()
@@ -13,6 +14,7 @@ const ConversationCard = ({ conversation }) => {
             dispatch(getTextsThunk(conversation._id))
             dispatch(selectReceiver(target))
             dispatch(updateUnreadThunk(conversation._id))
+            dispatch(selectConversation(conversation))
         }} className='flex justify-between  items-center px-4 bg-white h-[80px] max-w-full m-2 rounded-md cursor-pointer'>
             <div className='flex items-center h-full'>
                 <div className='w-[50px] h-[50px] rounded-full overflow-hidden bg-red-500 mr-4'>

@@ -7,7 +7,7 @@ const conversationSlice = createSlice({
     },
     reducers: {
         selectConversation: (state, action) => {
-            return action.payload
+            return {...state, selectecdConversation: action.payload}
         }
     },
     // extraReducers: (builder) => {

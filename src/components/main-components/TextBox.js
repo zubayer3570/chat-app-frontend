@@ -5,12 +5,13 @@ import Text from './Text';
 
 const TextBox = () => {
     const { loggedInUser, receiver } = useSelector(state => state.users)
+    const { selectecdConversation } = useSelector(state => state.conversation)
     const { texts } = useSelector(state => state.texts)
     const dispatch = useDispatch()
     const handleSend = (e) => {
         e.preventDefault()
         const text = e.target.text.value
-        dispatch(sendTextThunk({ sender: loggedInUser, receiver, text, unread: true }))
+        dispatch(sendTextThunk({ sender: loggedInUser, receiver, text, conversationID: selectecdConversation._id, unread: true }))
         e.target.reset()
     }
     useEffect(() => {
