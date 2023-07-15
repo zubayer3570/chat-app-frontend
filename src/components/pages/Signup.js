@@ -14,6 +14,7 @@ const Signup = () => {
         formData.append("name", e.target.name.value)
         formData.append("email", e.target.email.value)
         formData.append("password", e.target.password.value)
+        formData.append("active", false)
         dispatch(signupThunk(formData))
     }
     useEffect(() => {

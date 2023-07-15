@@ -9,14 +9,6 @@ import { socket } from './socket';
 
 
 function App() {
-  const dispatch = useDispatch()
-  useEffect(() => {
-    socket.on("new_message", (data) => {
-      dispatch(socketAddText(data))
-    })
-  }, [])
-
-
   return (
     <>
       <Routes>

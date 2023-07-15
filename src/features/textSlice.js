@@ -2,11 +2,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message) => {
-    await axios.post("http://localhost:5000/send-text", message)
+    await axios.post("http://192.168.1.104:5000/send-text", message)
 })
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationID) => {
-    const res = await axios.post("http://localhost:5000/get-texts", { conversationID })
+    const res = await axios.post("http://192.168.1.104:5000/get-texts", { conversationID })
     return res.data
 })
 
@@ -19,6 +19,9 @@ const textSlice = createSlice({
     reducers: {
         socketAddText: (state, action) => {
             return { ...state, texts: [...state.texts, action.payload] }
+        },
+        clearAllTexts: (state, action) => {
+            return { ...state, texts: [] }
         }
     },
     extraReducers: (builder) => {
@@ -31,6 +34,6 @@ const textSlice = createSlice({
     }
 })
 
-export const { socketAddText } = textSlice.actions
+export const { socketAddText, clearAllTexts } = textSlice.actions
 
 export default textSlice.reducer

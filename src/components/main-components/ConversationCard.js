@@ -22,11 +22,11 @@ const ConversationCard = ({ conversation }) => {
                 </div>
                 <div>
                     <p className='font-bold'>{target?.name}</p>
-                    <p className=''>{conversation?.lastMessage.text.slice(0, 20)}</p>
+                    <p className=''> <span>{conversation.lastMessage.sender._id == loggedInUser._id ? "You: " : ""}</span>  {conversation?.lastMessage.text.slice(0, 20)}</p>
                 </div>
             </div>
             {
-                conversation.lastMessage.unread ?
+                conversation.lastMessage.unread && conversation.lastMessage.receiver._id == loggedInUser._id ?
                     <div className={'h-[10px] w-[10px] rounded-full bg-red-500 mr-[20px]'}></div>
                     :
                     ""

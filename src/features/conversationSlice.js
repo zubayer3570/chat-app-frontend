@@ -3,16 +3,13 @@ const { createSlice } = require("@reduxjs/toolkit");
 const conversationSlice = createSlice({
     name: "conversationSlice",
     initialState: {
-        selectecdConversation: {}, loading: false
+        selectedConversation: {}, loading: false
     },
     reducers: {
         selectConversation: (state, action) => {
-            return {...state, selectecdConversation: action.payload}
+            return {...state, selectedConversation: action.payload}
         }
-    },
-    // extraReducers: (builder) => {
-    //     builder.addCase()
-    // }
+    }
 })
 
 export const { selectConversation } = conversationSlice.actions
