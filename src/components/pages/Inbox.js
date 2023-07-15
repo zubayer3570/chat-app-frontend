@@ -54,7 +54,6 @@ const Inbox = () => {
             dispatch(updateActiveStatus(data))
         })
 
-
     }, [])
 
     useEffect(() => {
@@ -64,6 +63,10 @@ const Inbox = () => {
             }
         })
     }, [selectedConversation])
+
+    // if (socket.disconnected) {
+    //     socket.connect()
+    // }
     return (
         <div className='grid grid-cols-4 min-h-[100vh] bg-1'>
             <div className='col-span-1'>

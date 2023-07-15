@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios'
-
-const savedUser = JSON.parse(localStorage.getItem("chat-app"))
+import { socket } from '../socket'
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData) => {
     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/signup", formData)
@@ -25,7 +24,7 @@ export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (co
 const userSlice = createSlice({
     name: "userSlice",
     initialState: {
-        loggedInUser: savedUser,
+        loggedInUser: JSON.parse(localStorage.getItem("chat-app")) || {},
         receiver: {},
         loading: false,
         allUsers: []
@@ -61,6 +60,11 @@ const userSlice = createSlice({
         },
         addNewUser: (state, action) => {
             return { ...state, allUsers: [...state.allUsers, action.payload] }
+        },
+        logoutUser: (state) => {
+            localStorage.removeItem("chat-app")
+            socket.disconnect()
+            return { ...state, loggedInUser: {} }
         }
     },
     extraReducers: (builder) => {
@@ -69,7 +73,7 @@ const userSlice = createSlice({
         })
         builder.addCase(signupThunk.fulfilled, (state, action) => {
             localStorage.setItem("chat-app", JSON.stringify(action.payload))
-            const data = {...action.payload, active: true}
+            const data = { ...action.payload, active: true }
             return { ...state, loggedInUser: data, loading: false, message: {} }
         })
 
@@ -109,5 +113,5 @@ const userSlice = createSlice({
         })
     }
 })
-export const { selectReceiver, addConversationFromSocket, updateLastMessage, updateActiveStatus, addNewUser } = userSlice.actions
+export const { selectReceiver, addConversationFromSocket, updateLastMessage, updateActiveStatus, addNewUser, logoutUser } = userSlice.actions
 export default userSlice.reducer
