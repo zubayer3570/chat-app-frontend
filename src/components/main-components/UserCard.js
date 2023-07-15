@@ -22,16 +22,18 @@ const UserCard = ({ user }) => {
         }
     }
     return (
-        <div onClick={handleClick} className='flex items-center px-4 py-2 bg-white max-w-full rounded-md m-2 cursor-pointer' key={user._id} >
-            <div className='w-[35px] h-[35px] mr-4 rounded-full overflow-hidden'>
-                <img src={user.profileImg} alt="" />
-            </div>
-            <div>
-                <p className='font-bold'>{user.name}</p>
+        <div onClick={handleClick} className='flex items-center justify-between px-4 py-2 bg-white max-w-full rounded-md m-2 cursor-pointer bg-test-3 shadow-1 text-white' key={user._id} >
+            <div className='flex items-center'>
+                <div className='w-[35px] h-[35px] mr-4 rounded-full overflow-hidden'>
+                    <img src={user.profileImg} alt="" />
+                </div>
+                <div>
+                    <p className='font-bold'>{user.name}</p>
+                </div>
             </div>
             {
                 user.active ?
-                    <div className={'h-[10px] w-[10px] rounded-full bg-green-500 mr-[20px]'}></div>
+                    <div className={'h-[10px] w-[10px] rounded-full bg-test-2 mr-[20px]'}></div>
                     :
                     ""
             }

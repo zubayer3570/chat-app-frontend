@@ -15,7 +15,7 @@ const ConversationCard = ({ conversation }) => {
             dispatch(selectReceiver(target))
             dispatch(updateUnreadThunk(conversation._id))
             dispatch(selectConversation(conversation))
-        }} className='flex justify-between  items-center px-4 bg-white h-[80px] max-w-full m-2 rounded-md cursor-pointer'>
+        }} className='flex justify-between items-center px-4 bg-white h-[80px] max-w-full m-2 rounded-md cursor-pointer shadow-1 bg-test-2'>
             <div className='flex items-center h-full'>
                 <div className='w-[50px] h-[50px] rounded-full overflow-hidden bg-red-500 mr-4'>
                     <img src={target?.profileImg} alt="" />

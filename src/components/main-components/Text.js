@@ -9,10 +9,8 @@ const Text = ({ text }) => {
             <div className={`w-[40px] h-[40px] rounded-full overflow-hidden bg-red-500 mr-4 ${senderIsTheUser ? "order-2" : ''}`}>
                 <img src={text?.sender.profileImg} alt="" />
             </div>
-            <div className={`shrink-0 bg-white max-w-[70%] p-2 rounded-md ${senderIsTheUser ? "order-1 mr-2" : ''}`} >
-                {/* <p className='font-bold '>{text?.sender.name}</p> */}
-                <p className='font-bold'>{text?.text}</p>
-                {/* <p className=''>{text?.text}</p> */}
+            <div className={`shrink-0 max-w-[70%] p-2 px-4 rounded-[30px] shadow-1 ${senderIsTheUser ? "order-1 mr-2 bg-test-3" : 'bg-test-2'}`} >
+                <p className='font-bold text-[white]'>{text?.text}</p>
             </div>
         </div>
     );

@@ -2,10 +2,6 @@ import { Routes, Route } from 'react-router-dom'
 import Inbox from './components/pages/Inbox';
 import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
-import { useDispatch } from 'react-redux';
-import { socketAddText } from './features/textSlice';
-import { useEffect } from 'react';
-import { socket } from './socket';
 
 
 function App() {

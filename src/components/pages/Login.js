@@ -23,13 +23,21 @@ const Login = () => {
         }
     }, [loggedInUser])
     return (
-        <form onSubmit={handleLogin} className='flex flex-col'>
-            <p>login page</p>
-            <input name='email' className='border-2' type="text" />
-            <input name='password' className='border-2' type="text" />
-            <input type="submit" value="login" />
-            <Link to="/signup" >Already have an account? Signup...</Link>
-        </form>
+        <div className='h-[80vh] w-full flex items-center justify-center'>
+            <div className='bg-1 w-[450px] p-8 rounded-2xl'>
+                <p className='text-white font-bold text-[20px] text-center mb-4'>login page</p>
+                <form onSubmit={handleLogin} className='flex flex-col rounded-md font-bold'>
+
+                    <label className='text-[13px] text-white mt-2 ml-2'>Email</label>
+                    <input name="email" className='grow h-[35px] rounded-full px-4 mb-2' type="text" />
+
+                    <label className='text-[13px] text-white mt-2 ml-2'>Password</label>
+                    <input name="password" className='grow h-[35px] rounded-full px-4 mb-6' type="password" />
+                    <button type="submit" className='grow h-[35px] rounded-full px-4 bg-2 text-white mb-2' value="login">Login</button>
+                    <Link to="/signup" className='text-white' >Don't have an account? Signup...</Link>
+                </form>
+            </div>
+        </div>
     );
 };
 

@@ -8,6 +8,7 @@ import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
 import { socketAddText } from '../../features/textSlice';
 import { selectConversation } from '../../features/conversationSlice';
+import AllConversations from '../main-components/AllConversations';
 
 
 const Inbox = () => {
@@ -41,19 +42,12 @@ const Inbox = () => {
             }
         })
 
-        // socket.on("new_message", (data) => {
-        //     if (selectedConversation._id == data.conversationID) {
-        //         dispatch(socketAddText(data))
-        //     }
-        // })
-
-
-
         socket.on("new_last_message", (data) => {
             dispatch(updateLastMessage(data))
         })
 
         socket.on("new_user", (data) => {
+            console.log(data)
             dispatch(addNewUser(data))
         })
         socket.on("active_status_updated", (data) => {
@@ -71,16 +65,14 @@ const Inbox = () => {
         })
     }, [selectedConversation])
     return (
-        <div className='grid grid-cols-4 min-h-[100vh]'>
-            <div className='col-span-1 bg-red-500'>
-                {
-                    loggedInUser?.conversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation._id} />)
-                }
+        <div className='grid grid-cols-4 min-h-[100vh] bg-1'>
+            <div className='col-span-1'>
+                <AllConversations />
             </div>
-            <div className='col-span-2 bg-green-500'>
+            <div className='col-span-2 h-[100vh] p-2'>
                 <TextBox />
             </div>
-            <div className='bg-yellow-200'>
+            <div className=''>
                 <AllUsers />
             </div>
         </div>

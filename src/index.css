@@ -1,3 +1,7 @@
+.body{
+    background-color: red;
+    background-image: "linear-gradient(to right bottom, rgb(134, 239, 172), rgb(192, 132, 252))"
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -4,20 +4,20 @@ import axios from 'axios'
 const savedUser = JSON.parse(localStorage.getItem("chat-app"))
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/signup", formData)
+    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/signup", formData)
     return data
 })
 export const loginThunk = createAsyncThunk("loginThunk", async (userData) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/login", userData)
+    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/login", userData)
     return data
 })
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
-    const { data } = await axios.get("http://192.168.1.104:5000/all-users")
+    const { data } = await axios.get("https://chat-app-pzz6.onrender.com/all-users")
     return data;
 })
 
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/update-unread", { conversationID })
+    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/update-unread", { conversationID })
     return data;
 })
 
@@ -69,7 +69,8 @@ const userSlice = createSlice({
         })
         builder.addCase(signupThunk.fulfilled, (state, action) => {
             localStorage.setItem("chat-app", JSON.stringify(action.payload))
-            return { ...state, loggedInUser: action.payload, loading: false, message: {} }
+            const data = {...action.payload, active: true}
+            return { ...state, loggedInUser: data, loading: false, message: {} }
         })
 
 
