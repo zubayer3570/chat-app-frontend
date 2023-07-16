@@ -1,18 +1,30 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { allUsersThunk, logoutUser } from '../../features/userSlice';
+import { addNewUser, allUsersThunk, logoutUser, updateActiveStatus } from '../../features/userSlice';
 import UserCard from './UserCard';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
+import { socket } from '../../socket';
 
 const AllUsers = () => {
     const { loggedInUser, allUsers } = useSelector(state => state.users)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    // useEffect(() => { dispatch(allUsersThunk()) }, [])
+
+    useEffect(() => { dispatch(allUsersThunk()) }, [])
     const handleLogout = () => {
         dispatch(logoutUser())
     }
+
+    useEffect(() => {
+        socket.on("active_status_updated", (data) => {
+            dispatch(updateActiveStatus(data))
+        })
+        socket.on("new_user", (data) => {
+            dispatch(addNewUser(data))
+        })
+    }, [])
+
     return (
         <div className={style.hideScrollbar}>
             <div className='hidden lg:flex items-center m-2'>
@@ -21,6 +33,7 @@ const AllUsers = () => {
                     <img src={loggedInUser?.profileImg} alt="" />
                 </div>
             </div>
+            <div onClick={() => navigate("/mobile/conversations")} className='lg:hidden text-white font-bold px-4 pt-4'>Back</div>
             <div className='font-bold text-white text-center pt-4 mb-2'> <span></span> All Users with Active Status</div>
             {
                 allUsers?.map(user => {

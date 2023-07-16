@@ -32,7 +32,7 @@ const Signup = () => {
     return (
         <div className='h-[80vh] w-full flex items-center justify-center'>
             <div className='bg-1 w-[450px] p-8 rounded-2xl'>
-                <p className='text-white font-bold text-[20px] text-center mb-4'>Signup with Zext</p>
+                <p className='text-white font-bold text-[20px] text-center mb-4'>Signup with ZEXT</p>
                 <form onSubmit={handleSignup} encType='multipart/form-data' className='flex flex-col rounded-md font-bold'>
                     <label className='text-[13px] text-white mt-2 ml-2'>Name</label>
                     <input name="name" className='grow h-[35px] rounded-full px-4 mb-2' type="text" required />

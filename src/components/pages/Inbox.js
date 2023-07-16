@@ -29,46 +29,48 @@ const Inbox = () => {
     //         dispatch(loginThunk(loggedInUser))
     //     }
     // }, [])
-    // useEffect(() => {
-    //     if (!loggedInUser?._id) {
-    //         navigate('/login')
-    //     }
-    // }, [loggedInUser])
+    useEffect(() => {
+        if (!loggedInUser?._id) {
+            navigate('/login')
+        }
+    }, [loggedInUser])
     // useEffect(() => {
     //     setTextBoxHeight(visualHeight + 'px')
     // }, [visualHeight])
+
+
     //socket connection
-    // useEffect(() => {
-    //     socket.connect()
+    useEffect(() => {
+        socket.connect()
 
-    //     socket.on("connect", () => {
-    //         if (loggedInUser._id) {
-    //             socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
-    //         }
-    //     })
+        socket.on("connect", () => {
+            if (loggedInUser._id) {
+                socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
+            }
+        })
 
-    //     socket.on("new_conversation", (newConversation) => {
-    //         dispatch(addConversationFromSocket(newConversation))
-    //         if (newConversation.lastMessage.sender._id == loggedInUser._id) {
-    //             dispatch(selectConversation(newConversation))
-    //         }
-    //     })
+        // socket.on("new_conversation", (newConversation) => {
+        //     dispatch(addConversationFromSocket(newConversation))
+        //     if (newConversation.lastMessage.sender._id == loggedInUser._id) {
+        //         dispatch(selectConversation(newConversation))
+        //     }
+        // })
 
-    //     socket.on("new_last_message", (data) => {
-    //         dispatch(updateLastMessage(data))
-    //     })
+        // socket.on("new_last_message", (data) => {
+        //     dispatch(updateLastMessage(data))
+        // })
 
-    //     socket.on("new_user", (data) => {
-    //         console.log(data)
-    //         dispatch(addNewUser(data))
-    //     })
+        // socket.on("new_user", (data) => {
+        //     console.log(data)
+        //     dispatch(addNewUser(data))
+        // })
 
-    //     socket.on("active_status_updated", (data) => {
-    //         console.log(data)
-    //         dispatch(updateActiveStatus(data))
-    //     })
-    //     return () => socket.removeAllListeners()
-    // }, [])
+        // socket.on("active_status_updated", (data) => {
+        //     console.log(data)
+        //     dispatch(updateActiveStatus(data))
+        // })
+        return () => socket.removeAllListeners()
+    }, [])
 
     // useEffect(() => {
     //     socket.on("new_message", (data) => {

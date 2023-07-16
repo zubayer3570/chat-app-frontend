@@ -21,24 +21,26 @@ function App() {
 
 
   useEffect(() => {
-    dispatch(allUsersThunk())
+    // dispatch(allUsersThunk())
     if (loggedInUser?._id) {
       dispatch(loginThunk(loggedInUser))
     }
   }, [])
-  useEffect(() => {
-    if (!loggedInUser?._id) {
-      navigate('/login')
-    }
-  }, [loggedInUser])
 
-  useEffect(() => {
-    socket.on("new_message", (data) => {
-      if (selectedConversation._id == data.conversationID) {
-        dispatch(socketAddText(data))
-      }
-    })
-  }, [selectedConversation])
+  // useEffect(() => {
+  //   if (!loggedInUser?._id) {
+  //     navigate('/login')
+  //   }
+  // }, [loggedInUser])
+
+
+  // useEffect(() => {
+  //   socket.on("new_message", (data) => {
+  //     if (selectedConversation._id == data.conversationID) {
+  //       dispatch(socketAddText(data))
+  //     }
+  //   })
+  // }, [selectedConversation])
 
   useEffect(() => {
     socket.connect()
@@ -49,28 +51,27 @@ function App() {
       }
     })
 
-    socket.on("new_conversation", (newConversation) => {
-      dispatch(addConversationFromSocket(newConversation))
-      if (newConversation.lastMessage.sender._id == loggedInUser._id) {
-        dispatch(selectConversation(newConversation))
-      }
-    })
+    // socket.on("new_conversation", (newConversation) => {
+    //   dispatch(addConversationFromSocket(newConversation))
+    //   if (newConversation.lastMessage.sender._id == loggedInUser._id) {
+    //     dispatch(selectConversation(newConversation))
+    //   }
+    // })
 
-    socket.on("new_last_message", (data) => {
-      dispatch(updateLastMessage(data))
-    })
+    // socket.on("new_last_message", (data) => {
+    //   dispatch(updateLastMessage(data))
+    // })
 
-    socket.on("new_user", (data) => {
-      dispatch(addNewUser(data))
-    })
+    // socket.on("new_user", (data) => {
+    //   dispatch(addNewUser(data))
+    // })
 
-    socket.on("active_status_updated", (data) => {
-      dispatch(updateActiveStatus(data))
-    })
+    // socket.on("active_status_updated", (data) => {
+    //   dispatch(updateActiveStatus(data))
+    // })
+
     return () => socket.removeAllListeners()
   }, [])
-
-
 
   return (
     <>

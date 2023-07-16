@@ -1,18 +1,37 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import ConversationCard from './ConversationCard';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
+import { socket } from '../../socket';
+import { selectConversation } from '../../features/conversationSlice';
+import { addConversationFromSocket, updateLastMessage } from '../../features/userSlice';
 
 const AllConversations = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
+
+
+    useEffect(() => {
+        socket.on("new_conversation", (newConversation) => {
+            dispatch(addConversationFromSocket(newConversation))
+            if (newConversation.lastMessage.sender._id == loggedInUser._id) {
+                dispatch(selectConversation(newConversation))
+            }
+        })
+        socket.on("new_last_message", (data) => {
+            dispatch(updateLastMessage(data))
+        })
+    }, [])
+
+
     return (
         <div>
             {/* mobile layout */}
             <div className='flex lg:hidden items-center justify-between px-8'>
-                {/* <p className='text-white font-bold text-[20px]'>Zext</p> */}
-                <p className='text-[20px] p-1 px-2 bg-test-2 rounded-md font-bold mt-4 mb-2'>Zext</p>
+                {/* <p className='text-white font-bold text-[20px]'>ZEXT</p> */}
+                <p className='text-[20px] p-1 px-2 bg-test-2 rounded-md font-bold mt-4 mb-2'>ZEXT</p>
                 <div className='flex'>
                     <div className='w-12 h-12 rounded-full overflow-hidden mr-2'>
                         <img src={loggedInUser?.profileImg} alt="" />
@@ -32,7 +51,7 @@ const AllConversations = () => {
 
             {/* desktop layout */}
             <div className='hidden lg:flex justify-center'>
-                <p className='text-[20px] p-2 px-4 bg-test-2 rounded-md font-bold mt-4 mb-2'>Zext</p>
+                <p className='text-[20px] p-2 px-4 bg-test-2 rounded-md font-bold mt-4 mb-2'>ZEXT</p>
             </div>
             <div className='font-bold text-white text-center mt-4 mb-2'>Your Conversations</div>
             <div className={style.hideScrollbar}>

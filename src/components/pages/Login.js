@@ -25,7 +25,7 @@ const Login = () => {
     return (
         <div className='h-[80vh] w-full flex items-center justify-center'>
             <div className='bg-1 w-[450px] p-8 rounded-2xl'>
-                <p className='text-white font-bold text-[20px] text-center mb-4'>login page</p>
+                <p className='text-white font-bold text-[20px] text-center mb-4'>Login to ZEXT!</p>
                 <form onSubmit={handleLogin} className='flex flex-col rounded-md font-bold'>
 
                     <label className='text-[13px] text-white mt-2 ml-2'>Email</label>
