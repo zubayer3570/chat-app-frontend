@@ -22,7 +22,7 @@ const UserCard = ({ user }) => {
         }
     }
     return (
-        <div onClick={handleClick} className='flex items-center justify-between px-4 py-2 bg-white max-w-full rounded-md m-2 cursor-pointer bg-test-3 shadow-1 text-white' key={user._id} >
+        <div onClick={handleClick} className='flex items-center justify-between px-4 py-2 w-[250px] rounded-md m-2 cursor-pointer bg-test-3 shadow-1 text-white' key={user._id} >
             <div className='flex items-center'>
                 <div className='w-[35px] h-[35px] mr-4 rounded-full overflow-hidden'>
                     <img src={user.profileImg} alt="" />
