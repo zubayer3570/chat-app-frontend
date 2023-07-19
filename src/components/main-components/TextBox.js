@@ -1,10 +1,14 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendTextThunk, socketAddText } from '../../features/textSlice';
+import { sendTextThunk, addText } from '../../features/textSlice';
 import Text from './Text';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
+import { createNewConversation } from '../../customFunctions.js/createNewConversation';
+import { addNewConversation } from '../../features/userSlice';
+import { newConversationThunk, selectConversation } from '../../features/conversationSlice';
+const { nanoid } = require("nanoid")
 
 
 const TextBox = () => {
@@ -14,15 +18,42 @@ const TextBox = () => {
     const { texts } = useSelector(state => state.texts)
     const dispatch = useDispatch()
     const handleSend = (e) => {
+        const _id = nanoid()
         e.preventDefault()
-        const text = e.target.text.value
-        dispatch(sendTextThunk({ sender: loggedInUser, receiver, text, unread: true }))
-        e.target.reset()
+        const message = {
+            _id,
+            sender: {
+                _id: loggedInUser._id,
+                email: loggedInUser.email,
+                profileImg: loggedInUser.profileImg
+            },
+            receiver:{
+                _id: receiver._id,
+                email: receiver.email,
+                profileImg: receiver.profileImg
+            },
+            text: e.target.text.value,
+            unread: true,
+            conversationID: selectedConversation._id
+        }
+        if (!message.conversationID) {
+            let newConversation = createNewConversation(loggedInUser, receiver)
+            message.conversationID = newConversation._id
+            newConversation = { ...newConversation, lastMessage: message }
+            socket.emit("new_conversation", newConversation)
+            dispatch(addNewConversation(newConversation))
+            dispatch(newConversationThunk(newConversation))
+            dispatch(selectConversation(newConversation))
+        }
+        dispatch(addText(message))
+        dispatch(sendTextThunk(message))
+        socket.emit("new_message", message)
+        // e.target.text.value = ""
     }
     useEffect(() => {
         socket.on("new_message", (data) => {
             if (selectedConversation._id == data.conversationID) {
-                dispatch(socketAddText(data))
+                dispatch(addText(data))
             }
         })
     }, [selectedConversation])

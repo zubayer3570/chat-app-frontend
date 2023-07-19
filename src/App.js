@@ -5,9 +5,9 @@ import Signup from './components/pages/Signup';
 import { useEffect } from 'react';
 import { socket } from './socket';
 import { selectConversation } from './features/conversationSlice';
-import { addConversationFromSocket, addNewUser, allUsersThunk, loginThunk, updateActiveStatus, updateLastMessage } from './features/userSlice';
+import { addNewConversation, addNewUser, allUsersThunk, loginThunk, updateActiveStatus, updateLastMessage } from './features/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { socketAddText } from './features/textSlice';
+import { addText } from './features/textSlice';
 import MobileAllConversations from './components/pages/MobilePages/MobileAllConversations';
 import MobileAllUsers from './components/pages/MobilePages/MobileAllUsers';
 import MobileTextbox from './components/pages/MobilePages/MobileTextbox';
@@ -37,7 +37,7 @@ function App() {
   // useEffect(() => {
   //   socket.on("new_message", (data) => {
   //     if (selectedConversation._id == data.conversationID) {
-  //       dispatch(socketAddText(data))
+  //       dispatch(addText(data))
   //     }
   //   })
   // }, [selectedConversation])
@@ -52,7 +52,7 @@ function App() {
     })
 
     // socket.on("new_conversation", (newConversation) => {
-    //   dispatch(addConversationFromSocket(newConversation))
+    //   dispatch(addNewConversation(newConversation))
     //   if (newConversation.lastMessage.sender._id == loggedInUser._id) {
     //     dispatch(selectConversation(newConversation))
     //   }

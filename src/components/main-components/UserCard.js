@@ -13,13 +13,18 @@ const UserCard = ({ user }) => {
         dispatch(selectReceiver(user))
         dispatch(clearAllTexts())
         for (const loggedInUserConversationID of loggedInUser.conversationIDs) {
+            let breakLoop = false
             for (const clickedUserConverationID of user.conversationIDs) {
                 if (loggedInUserConversationID == clickedUserConverationID) {
                     dispatch(getTextsThunk(clickedUserConverationID))
                     const conversationToBeSelected = loggedInUser.conversations.find(con => con._id == clickedUserConverationID)
                     dispatch(selectConversation(conversationToBeSelected))
+                    breakLoop = true
                     break;
                 }
+            }
+            if (breakLoop) {
+                break;
             }
         }
         if (window.location.pathname.includes("mobile")) {
@@ -33,7 +38,7 @@ const UserCard = ({ user }) => {
                     <img src={user.profileImg} alt="" />
                 </div>
                 <div>
-                    <p className='font-bold'>{user.name}</p>
+                    <p className='font-bold'>{user.name.split(" ")[0]}</p>
                 </div>
             </div>
             {

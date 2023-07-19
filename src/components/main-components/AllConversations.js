@@ -5,7 +5,7 @@ import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
 import { selectConversation } from '../../features/conversationSlice';
-import { addConversationFromSocket, updateLastMessage } from '../../features/userSlice';
+import { addNewConversation, logoutUser, updateLastMessage } from '../../features/userSlice';
 
 const AllConversations = () => {
     const navigate = useNavigate()
@@ -15,16 +15,16 @@ const AllConversations = () => {
 
     useEffect(() => {
         socket.on("new_conversation", (newConversation) => {
-            dispatch(addConversationFromSocket(newConversation))
-            if (newConversation.lastMessage.sender._id == loggedInUser._id) {
-                dispatch(selectConversation(newConversation))
-            }
+            dispatch(addNewConversation(newConversation))
         })
         socket.on("new_last_message", (data) => {
             dispatch(updateLastMessage(data))
         })
     }, [])
 
+    // if (!loggedInUser) {
+
+    // }
 
     return (
         <div>
@@ -37,7 +37,10 @@ const AllConversations = () => {
                         <img src={loggedInUser?.profileImg} alt="" />
                     </div>
                     <div className='flex items-center mr-2'>
-                        <button className='px-4 py-2 rounded-full bg-test-3 font-bold text-white'>logout</button>
+                        <button onClick={() => {
+                            dispatch(logoutUser())
+                            navigate('/login')
+                        }} className='px-4 py-2 rounded-full bg-test-3 font-bold text-white'>logout</button>
                     </div>
                     <div onClick={() => navigate("/mobile/all-users")} className='flex items-center'>
                         <div className='flex items-center justify-center h-[35px] w-[35px] bg-test-3 rounded-full overflow-hidden'>

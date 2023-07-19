@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addConversationFromSocket, loginThunk, updateActiveStatus, updateLastMessage, addNewUser } from '../../features/userSlice';
+import { addNewConversation, loginThunk, updateActiveStatus, updateLastMessage, addNewUser } from '../../features/userSlice';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
-import { socketAddText } from '../../features/textSlice';
+import { addText } from '../../features/textSlice';
 import { selectConversation } from '../../features/conversationSlice';
 import AllConversations from '../main-components/AllConversations';
 
@@ -43,14 +43,14 @@ const Inbox = () => {
     useEffect(() => {
         socket.connect()
 
-        socket.on("connect", () => {
-            if (loggedInUser._id) {
-                socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
-            }
-        })
+        // socket.on("connect", () => {
+        //     if (loggedInUser._id) {
+        //         socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
+        //     }
+        // })
 
         // socket.on("new_conversation", (newConversation) => {
-        //     dispatch(addConversationFromSocket(newConversation))
+        //     dispatch(addNewConversation(newConversation))
         //     if (newConversation.lastMessage.sender._id == loggedInUser._id) {
         //         dispatch(selectConversation(newConversation))
         //     }
@@ -75,7 +75,7 @@ const Inbox = () => {
     // useEffect(() => {
     //     socket.on("new_message", (data) => {
     //         if (selectedConversation._id == data.conversationID) {
-    //             dispatch(socketAddText(data))
+    //             dispatch(addText(data))
     //         }
     //     })
     // }, [selectedConversation])

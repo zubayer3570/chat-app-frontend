@@ -3,20 +3,20 @@ import axios from 'axios'
 import { socket } from '../socket'
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/signup", formData)
+    const { data } = await axios.post("http://localhost:5000/signup", formData)
     return data
 })
 export const loginThunk = createAsyncThunk("loginThunk", async (userData) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/login", userData)
+    const { data } = await axios.post("http://localhost:5000/login", userData)
     return data
 })
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
-    const { data } = await axios.get("http://192.168.1.104:5000/all-users")
+    const { data } = await axios.get("http://localhost:5000/all-users")
     return data;
 })
 
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/update-unread", { conversationID })
+    const { data } = await axios.post("http://localhost:5000/update-unread", { conversationID })
     return data;
 })
 
@@ -30,12 +30,11 @@ const userSlice = createSlice({
         allUsers: []
     },
     reducers: {
+        addNewConversation: (state, action) => {
+            return { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...state.loggedInUser.conversations, action.payload] } }
+        },
         selectReceiver: (state, action) => {
             return { ...state, receiver: action.payload }
-        },
-        addConversationFromSocket: (state, action) => {
-            const x = { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...state.loggedInUser.conversations, action.payload] } }
-            return x
         },
         updateLastMessage: (state, action) => {
             const newConversation = state.loggedInUser.conversations.map(conversation => {
@@ -115,7 +114,7 @@ const userSlice = createSlice({
 })
 export const {
     selectReceiver,
-    addConversationFromSocket,
+    addNewConversation,
     updateLastMessage,
     updateActiveStatus,
     addNewUser,
