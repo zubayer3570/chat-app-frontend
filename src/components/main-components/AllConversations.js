@@ -22,15 +22,10 @@ const AllConversations = () => {
         })
     }, [])
 
-    // if (!loggedInUser) {
-
-    // }
-
     return (
         <div>
             {/* mobile layout */}
             <div className='flex lg:hidden items-center justify-between px-8'>
-                {/* <p className='text-white font-bold text-[20px]'>ZEXT</p> */}
                 <p className='text-[20px] p-1 px-2 bg-test-2 rounded-md font-bold mt-4 mb-2'>ZEXT</p>
                 <div className='flex'>
                     <div className='w-12 h-12 rounded-full overflow-hidden mr-2'>

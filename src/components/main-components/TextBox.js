@@ -48,7 +48,7 @@ const TextBox = () => {
         dispatch(addText(message))
         dispatch(sendTextThunk(message))
         socket.emit("new_message", message)
-        // e.target.text.value = ""
+        e.target.text.value = ""
     }
     useEffect(() => {
         socket.on("new_message", (data) => {
