@@ -6,7 +6,7 @@ import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
 import { createNewConversation } from '../../customFunctions.js/createNewConversation';
-import { addNewConversation } from '../../features/userSlice';
+import { addNewConversation, updateLastMessage } from '../../features/userSlice';
 import { newConversationThunk, selectConversation } from '../../features/conversationSlice';
 const { nanoid } = require("nanoid")
 
@@ -27,7 +27,7 @@ const TextBox = () => {
                 email: loggedInUser.email,
                 profileImg: loggedInUser.profileImg
             },
-            receiver:{
+            receiver: {
                 _id: receiver._id,
                 email: receiver.email,
                 profileImg: receiver.profileImg
@@ -36,6 +36,7 @@ const TextBox = () => {
             unread: true,
             conversationID: selectedConversation._id
         }
+
         if (!message.conversationID) {
             let newConversation = createNewConversation(loggedInUser, receiver)
             message.conversationID = newConversation._id
@@ -45,9 +46,12 @@ const TextBox = () => {
             dispatch(newConversationThunk(newConversation))
             dispatch(selectConversation(newConversation))
         }
+
         dispatch(addText(message))
-        dispatch(sendTextThunk(message))
+        dispatch(updateLastMessage(message))
         socket.emit("new_message", message)
+        socket.emit("new_last_message", message)
+        dispatch(sendTextThunk(message))
         e.target.text.value = ""
     }
     useEffect(() => {

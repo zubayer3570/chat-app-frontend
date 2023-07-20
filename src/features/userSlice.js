@@ -3,21 +3,21 @@ import axios from 'axios'
 import { socket } from '../socket'
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData) => {
-    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/signup", formData)
+    const { data } = await axios.post("http://localhost:5000/signup", formData)
     console.log(data)
     return data
 })
 export const loginThunk = createAsyncThunk("loginThunk", async (userData) => {
-    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/login", userData)
+    const { data } = await axios.post("http://localhost:5000/login", userData)
     return data
 })
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
-    const { data } = await axios.get("https://chat-app-pzz6.onrender.com/all-users")
+    const { data } = await axios.get("http://localhost:5000/all-users")
     return data;
 })
 
-export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversation) => {
-    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/update-unread", { conversationID: conversation._id })
+export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
+    const { data } = await axios.post("http://localhost:5000/update-unread", { conversationID })
     return data;
 })
 

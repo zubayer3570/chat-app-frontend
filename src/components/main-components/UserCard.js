@@ -12,16 +12,17 @@ const UserCard = ({ user }) => {
     const handleClick = () => {
         dispatch(selectReceiver(user))
         dispatch(clearAllTexts())
+        dispatch(selectConversation({}))
         for (const loggedInUserConversationID of loggedInUser.conversationIDs) {
             const conversationExists = user.conversationIDs.includes(loggedInUserConversationID)
-            if(conversationExists){
-                dispatch(getTextsThunk(loggedInUserConversationID))
+            if (conversationExists) {
                 const conversationToBeSelected = loggedInUser.conversations.find(con => con._id == loggedInUserConversationID)
                 dispatch(selectConversation(conversationToBeSelected))
+                dispatch(getTextsThunk(loggedInUserConversationID))
                 break;
             }
         }
-        
+
         if (window.location.pathname.includes("mobile")) {
             navigate("/mobile/textbox")
         }

@@ -23,17 +23,7 @@ function App() {
   }, [])
 
 
-  useEffect(() => {
-    socket.connect()
 
-    socket.on("connect", () => {
-      if (loggedInUser?._id) {
-        socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
-      }
-    })
-
-    return () => socket.removeAllListeners()
-  }, [])
 
   return (
     <>

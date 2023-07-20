@@ -26,7 +26,7 @@ const AllUsers = () => {
     }, [])
 
     return (
-        <div className={style.hideScrollbar}>
+        <div className={'overflow-auto ' + style.hideScrollbar}>
             <div className='hidden lg:flex items-center m-2'>
                 <button onClick={handleLogout} className='grow py-2 px-4 rounded-full bg-test-3 font-bold text-white mr-2'>Logout</button>
                 <div className='h-[40px] w-[40px] rounded-full overflow-hidden mr-4'>
@@ -35,14 +35,16 @@ const AllUsers = () => {
             </div>
             <div onClick={() => navigate("/mobile/conversations")} className='lg:hidden text-white font-bold px-4 pt-4'>Back</div>
             <div className='font-bold text-white text-center pt-4 mb-2'> <span></span> All Users with Active Status</div>
-            {
-                allUsers?.map(user => {
-                    if (user._id == loggedInUser._id) {
-                        return
-                    }
-                    return <UserCard user={user} key={user._id} />
-                })
-            }
+            <div className={"overflow-auto"}>
+                {
+                    allUsers?.map(user => {
+                        if (user._id == loggedInUser._id) {
+                            return
+                        }
+                        return <UserCard user={user} key={user._id} />
+                    })
+                }
+            </div>
         </div>
     );
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addNewConversation, loginThunk, updateActiveStatus, updateLastMessage, addNewUser } from '../../features/userSlice';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
@@ -14,6 +13,19 @@ const Inbox = () => {
     const [textBoxHeight, setTextBoxHeight] = useState("100vh")
     const navigate = useNavigate()
     const { loggedInUser } = useSelector(state => state.users)
+
+    useEffect(() => {
+        socket.connect()
+
+        socket.on("connect", () => {
+            if (loggedInUser?._id) {
+                socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
+            }
+        })
+
+        return () => socket.removeAllListeners()
+    }, [])
+
     useEffect(() => {
         if (window.innerWidth < 570) {
             if (!window.location.pathname.includes("mobile")) {
@@ -29,15 +41,11 @@ const Inbox = () => {
     return (
         <>
             <div className={`flex bg-1 h-[${textBoxHeight}] lg:h-[100vh]`}>
-                <div className='col-span-1 lg:block'>
-                    <AllConversations />
-                </div>
+                <AllConversations />
                 <div className='flex-1 p-2'>
                     <TextBox />
                 </div>
-                <div className='hidden lg:block'>
-                    <AllUsers />
-                </div>
+                <AllUsers />
             </div>
         </>
     );

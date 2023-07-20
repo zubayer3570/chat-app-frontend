@@ -4,26 +4,33 @@ import ConversationCard from './ConversationCard';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
-import { selectConversation } from '../../features/conversationSlice';
-import { addNewConversation, logoutUser, updateLastMessage } from '../../features/userSlice';
+import { addNewConversation, logoutUser, updateLastMessage, updateUnreadThunk } from '../../features/userSlice';
 
 const AllConversations = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
+    const selectedConversation = useSelector(state => state.conversation.selectedConversation)
 
 
     useEffect(() => {
         socket.on("new_conversation", (newConversation) => {
             dispatch(addNewConversation(newConversation))
         })
+    }, [])
+    useEffect(() => {
         socket.on("new_last_message", (data) => {
+            if (selectedConversation._id == data.conversationID) {
+                data.unread = false
+                dispatch(updateUnreadThunk(data.conversationID))
+            }
             dispatch(updateLastMessage(data))
         })
-    }, [])
+        return () => { socket.off("new_last_message") }
+    }, [selectedConversation])
 
     return (
-        <div>
+        <div className={'overflow-auto ' + style.hideScrollbar}>
             {/* mobile layout */}
             <div className='flex lg:hidden items-center justify-between px-8'>
                 <p className='text-[20px] p-1 px-2 bg-test-2 rounded-md font-bold mt-4 mb-2'>ZEXT</p>
@@ -52,7 +59,7 @@ const AllConversations = () => {
                 <p className='text-[20px] p-2 px-4 bg-test-2 rounded-md font-bold mt-4 mb-2'>ZEXT</p>
             </div>
             <div className='font-bold text-white text-center mt-4 mb-2'>Your Conversations</div>
-            <div className={style.hideScrollbar}>
+            <div>
                 {
                     loggedInUser?.conversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation._id} />)
                 }

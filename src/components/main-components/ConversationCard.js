@@ -13,10 +13,13 @@ const ConversationCard = ({ conversation }) => {
     const conReceiverID = conversation?.participantsIDs?.split("###").filter(id => !(loggedInUser._id == id))[0]
     const target = allUsers.find(user => user._id == conReceiverID)
     const handleCick = () => {
-        dispatch(getTextsThunk(conversation._id))
         dispatch(selectReceiver(target))
-        dispatch(updateUnreadThunk(conversation._id))
         dispatch(selectConversation(conversation))
+        if (loggedInUser._id == conversation.lastMessage.receiver._id) {
+            dispatch(updateUnreadThunk(conversation._id))
+        }
+        dispatch(getTextsThunk(conversation._id))
+
         if (window.location.pathname.includes("mobile")) {
             navigate('/mobile/textbox')
         }
