@@ -4,8 +4,8 @@ import ConversationCard from './ConversationCard';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
-import { addNewConversation, logoutUser } from '../../features/userSlice';
-import { updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
+import { logoutUser } from '../../features/userSlice';
+import { addNewConversation, updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
 
 const AllConversations = () => {
     const navigate = useNavigate()

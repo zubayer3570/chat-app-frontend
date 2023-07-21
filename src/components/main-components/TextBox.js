@@ -6,9 +6,9 @@ import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
 import { createNewConversation } from '../../customFunctions.js/createNewConversation';
-import { addNewConversation, newConversationThunk } from '../../features/userSlice';
+import { newConversationThunk } from '../../features/userSlice';
 import { selectConversation } from '../../features/conversationSlice';
-import { updateLastMessage } from '../../features/conversationsSlice';
+import { addNewConversation, updateLastMessage } from '../../features/conversationsSlice';
 const { nanoid } = require("nanoid")
 
 
