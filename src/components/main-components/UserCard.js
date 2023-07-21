@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectReceiver } from '../../features/userSlice';
 import { clearAllTexts, getTextsThunk } from '../../features/textSlice';
-import { selectConversation } from '../../features/conversationSlice';
+import { selectConversation } from '../../features/conversationsSlice';
 import { useNavigate } from 'react-router-dom';
 
 const UserCard = ({ user }) => {

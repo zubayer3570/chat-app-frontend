@@ -9,7 +9,7 @@ export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (co
 })
 
 const conversationsSlice = createSlice({
-    name: "conversationSlice",
+    name: "conversationsSlice",
     initialState: {
         selectedConversation: {}, allConversations: [], loading: false
     },

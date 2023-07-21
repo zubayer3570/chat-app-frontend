@@ -5,7 +5,7 @@ import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
 import { addText } from '../../features/textSlice';
-import { selectConversation } from '../../features/conversationSlice';
+import { selectConversation } from '../../features/conversationsSlice';
 import AllConversations from '../main-components/AllConversations';
 
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTextsThunk } from '../../features/textSlice';
 import { selectReceiver } from '../../features/userSlice';
-import { selectConversation } from '../../features/conversationSlice';
+import { selectConversation } from '../../features/conversationsSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateUnreadThunk } from '../../features/conversationsSlice';
 
