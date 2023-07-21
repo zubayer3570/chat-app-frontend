@@ -9,6 +9,7 @@ const UserCard = ({ user }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
+    const { allConversations } = useSelector(state => state.conversations)
     const handleClick = () => {
         dispatch(selectReceiver(user))
         dispatch(clearAllTexts())
@@ -16,7 +17,7 @@ const UserCard = ({ user }) => {
         for (const loggedInUserConversationID of loggedInUser.conversationIDs) {
             const conversationExists = user.conversationIDs.includes(loggedInUserConversationID)
             if (conversationExists) {
-                const conversationToBeSelected = loggedInUser.conversations.find(con => con._id == loggedInUserConversationID)
+                const conversationToBeSelected = allConversations.find(con => con._id == loggedInUserConversationID)
                 dispatch(selectConversation(conversationToBeSelected))
                 dispatch(getTextsThunk(loggedInUserConversationID))
                 break;

@@ -1,12 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import texts from '../features/textSlice'
 import users from '../features/userSlice'
-import conversation from '../features/conversationSlice'
-import mobile from '../features/mobile.slice'
+import conversations from '../features/conversationsSlice'
 
 const store = configureStore({
     reducer: {
-        users, texts, conversation, mobile
+        users, texts, conversations
     }
 })
 

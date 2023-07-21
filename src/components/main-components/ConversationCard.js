@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTextsThunk } from '../../features/textSlice';
-import { selectReceiver, updateUnreadThunk } from '../../features/userSlice';
+import { selectReceiver } from '../../features/userSlice';
 import { selectConversation } from '../../features/conversationSlice';
-import TextBox from './TextBox';
 import { useNavigate, useParams } from 'react-router-dom';
+import { updateUnreadThunk } from '../../features/conversationsSlice';
 
 const ConversationCard = ({ conversation }) => {
     const navigate = useNavigate()

@@ -1,24 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { socket } from '../socket'
+import { setAllConversations } from './conversationsSlice'
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData) => {
     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/signup", formData)
-    console.log(data)
     return data
 })
-export const loginThunk = createAsyncThunk("loginThunk", async (userData) => {
+export const loginThunk = createAsyncThunk("loginThunk", async (userData, {dispatch}) => {
     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/login", userData)
-    return data
+    dispatch(setAllConversations(data.conversations))
+    return data.user
 })
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
     const { data } = await axios.get("https://chat-app-pzz6.onrender.com/all-users")
     return data;
 })
 
-export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
-    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/update-unread", { conversationID })
-    return data;
+// export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
+//     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/update-unread", { conversationID })
+//     return data;
+// })
+
+export const newConversationThunk = createAsyncThunk("newConversationThunk", async (newConversation) => {
+    const res = await axios.post("https://chat-app-pzz6.onrender.com/add-conversation", newConversation)
+    return res.data
 })
 
 
@@ -31,21 +37,21 @@ const userSlice = createSlice({
         allUsers: []
     },
     reducers: {
-        addNewConversation: (state, action) => {
-            return { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...state.loggedInUser.conversations, action.payload] } }
-        },
+        // addNewConversation: (state, action) => {
+        //     return { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...state.loggedInUser.conversations, action.payload] } }
+        // },
         selectReceiver: (state, action) => {
             return { ...state, receiver: action.payload }
         },
-        updateLastMessage: (state, action) => {
-            const newConversation = state.loggedInUser.conversations.map(conversation => {
-                if (conversation._id == action.payload.conversationID) {
-                    conversation = { ...conversation, lastMessage: action.payload }
-                }
-                return conversation
-            })
-            return { ...state, loggedInUser: { ...state.loggedInUser, conversations: newConversation } }
-        },
+        // updateLastMessage: (state, action) => {
+        //     const newConversation = state.loggedInUser.conversations.map(conversation => {
+        //         if (conversation._id == action.payload.conversationID) {
+        //             conversation = { ...conversation, lastMessage: action.payload }
+        //         }
+        //         return conversation
+        //     })
+        //     return { ...state, loggedInUser: { ...state.loggedInUser, conversations: newConversation } }
+        // },
         updateActiveStatus: (state, action) => {
             const updated = state.allUsers.map(user => {
                 user = { ...user, active: false }
@@ -102,21 +108,19 @@ const userSlice = createSlice({
         builder.addCase(updateUnreadThunk.pending, (state) => {
             return { ...state, loading: true }
         })
-        builder.addCase(updateUnreadThunk.fulfilled, (state, action) => {
-            const newConversation = state.loggedInUser.conversations.map(conversation => {
-                if (conversation._id == action.payload._id) {
-                    return action.payload
-                }
-                return conversation
-            })
-            return { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...newConversation] } }
-        })
+        // builder.addCase(updateUnreadThunk.fulfilled, (state, action) => {
+        //     const newConversation = state.loggedInUser.conversations.map(conversation => {
+        //         if (conversation._id == action.payload._id) {
+        //             return action.payload
+        //         }
+        //         return conversation
+        //     })
+        //     return { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...newConversation] } }
+        // })
     }
 })
 export const {
     selectReceiver,
-    addNewConversation,
-    updateLastMessage,
     updateActiveStatus,
     addNewUser,
     logoutUser
