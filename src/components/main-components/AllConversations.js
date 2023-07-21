@@ -11,7 +11,7 @@ const AllConversations = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
-    const selectedConversation = useSelector(state => state.conversation.selectedConversation)
+    const {selectedConversation, allConversations} = useSelector(state => state.conversations)
 
 
     useEffect(() => {
@@ -61,8 +61,9 @@ const AllConversations = () => {
             </div>
             <div className='font-bold text-white text-center mt-4 mb-2'>Your Conversations</div>
             <div>
+                <div className='w-[280px] h-[1px] mx-2'></div>
                 {
-                    loggedInUser?.conversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation._id} />)
+                    allConversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation._id} />)
                 }
             </div>
         </div>

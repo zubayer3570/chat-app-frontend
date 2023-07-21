@@ -3,9 +3,11 @@ import axios from 'axios'
 import { socket } from '../socket'
 import { setAllConversations } from './conversationsSlice'
 
-export const signupThunk = createAsyncThunk("signupThunk", async (formData) => {
+export const signupThunk = createAsyncThunk("signupThunk", async (formData, {dispatch}) => {
     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/signup", formData)
-    return data
+    console.log(data)
+    dispatch(setAllConversations(data.conversations))
+    return data.user
 })
 export const loginThunk = createAsyncThunk("loginThunk", async (userData, {dispatch}) => {
     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/login", userData)
@@ -105,9 +107,9 @@ const userSlice = createSlice({
             return { ...state, allUsers: action.payload, loading: false }
         })
 
-        builder.addCase(updateUnreadThunk.pending, (state) => {
-            return { ...state, loading: true }
-        })
+        // builder.addCase(updateUnreadThunk.pending, (state) => {
+        //     return { ...state, loading: true }
+        // })
         // builder.addCase(updateUnreadThunk.fulfilled, (state, action) => {
         //     const newConversation = state.loggedInUser.conversations.map(conversation => {
         //         if (conversation._id == action.payload._id) {

@@ -15,7 +15,7 @@ const { nanoid } = require("nanoid")
 const TextBox = () => {
     const navigate = useNavigate()
     const { loggedInUser, receiver } = useSelector(state => state.users)
-    const { selectedConversation } = useSelector(state => state.conversation)
+    const { selectedConversation } = useSelector(state => state.conversations)
     const { texts } = useSelector(state => state.texts)
     const dispatch = useDispatch()
     const handleSend = (e) => {

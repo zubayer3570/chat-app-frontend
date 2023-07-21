@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTextsThunk } from '../../features/textSlice';
+import { clearAllTexts, getTextsThunk } from '../../features/textSlice';
 import { selectReceiver } from '../../features/userSlice';
 import { selectConversation } from '../../features/conversationsSlice';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -18,6 +18,7 @@ const ConversationCard = ({ conversation }) => {
         if (loggedInUser._id == conversation.lastMessage.receiver._id) {
             dispatch(updateUnreadThunk(conversation._id))
         }
+        dispatch(clearAllTexts())
         dispatch(getTextsThunk(conversation._id))
 
         if (window.location.pathname.includes("mobile")) {
