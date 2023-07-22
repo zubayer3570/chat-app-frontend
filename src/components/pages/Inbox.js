@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
-import { addText } from '../../features/textSlice';
-import { selectConversation } from '../../features/conversationsSlice';
 import AllConversations from '../main-components/AllConversations';
+import { getToken } from 'firebase/messaging';
+import axios from 'axios';
+import { messaging } from '../../firebase';
 
 
 const Inbox = () => {
@@ -38,6 +39,18 @@ const Inbox = () => {
             navigate('/login')
         }
     }, [loggedInUser])
+    const requestPermission = async () => {
+        const permission = await Notification.requestPermission()
+        if (permission === "granted") {
+            const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
+            await axios.post('http://192.168.1.104:5000/update-notification-token', { email: loggedInUser.email, token })
+        }
+
+    }
+    useEffect(() => {
+        requestPermission()
+    }, [])
+
     return (
         <>
             <div className={`flex bg-1 h-[${textBoxHeight}] lg:h-[100vh]`}>

@@ -4,28 +4,28 @@ import { socket } from '../socket'
 import { setAllConversations } from './conversationsSlice'
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData, {dispatch}) => {
-    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/signup", formData)
+    const { data } = await axios.post("http://192.168.1.104:5000/signup", formData)
     console.log(data)
     dispatch(setAllConversations(data.conversations))
     return data.user
 })
 export const loginThunk = createAsyncThunk("loginThunk", async (userData, {dispatch}) => {
-    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/login", userData)
+    const { data } = await axios.post("http://192.168.1.104:5000/login", userData)
     dispatch(setAllConversations(data.conversations))
     return data.user
 })
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
-    const { data } = await axios.get("https://chat-app-pzz6.onrender.com/all-users")
+    const { data } = await axios.get("http://192.168.1.104:5000/all-users")
     return data;
 })
 
 // export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
-//     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/update-unread", { conversationID })
+//     const { data } = await axios.post("http://192.168.1.104:5000/update-unread", { conversationID })
 //     return data;
 // })
 
 export const newConversationThunk = createAsyncThunk("newConversationThunk", async (newConversation) => {
-    const res = await axios.post("https://chat-app-pzz6.onrender.com/add-conversation", newConversation)
+    const res = await axios.post("http://192.168.1.104:5000/add-conversation", newConversation)
     return res.data
 })
 

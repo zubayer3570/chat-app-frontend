@@ -9,6 +9,8 @@ import { createNewConversation } from '../../customFunctions.js/createNewConvers
 import { newConversationThunk } from '../../features/userSlice';
 import { selectConversation } from '../../features/conversationsSlice';
 import { addNewConversation, updateLastMessage } from '../../features/conversationsSlice';
+import { messaging } from '../../firebase';
+import { getMessaging } from 'firebase/messaging';
 const { nanoid } = require("nanoid")
 
 
@@ -25,13 +27,17 @@ const TextBox = () => {
             _id,
             sender: {
                 _id: loggedInUser._id,
+                name: loggedInUser.name,
                 email: loggedInUser.email,
-                profileImg: loggedInUser.profileImg
+                profileImg: loggedInUser.profileImg,
+                notificationToken: loggedInUser.notificationToken
             },
             receiver: {
                 _id: receiver._id,
+                name: receiver.name,
                 email: receiver.email,
-                profileImg: receiver.profileImg
+                profileImg: receiver.profileImg,
+                notificationToken: receiver.notificationToken
             },
             text: e.target.text.value,
             unread: true,
