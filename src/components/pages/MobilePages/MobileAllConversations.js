@@ -6,10 +6,13 @@ import { allUsersThunk } from '../../../features/userSlice';
 import { getToken } from 'firebase/messaging';
 import axios from 'axios';
 import { messaging } from '../../../firebase';
+import { useNavigate } from 'react-router-dom';
 
 const MobileAllConversations = () => {
     const { loggedInUser } = useSelector(state => state.users)
+    const navigate = useNavigate()
     const dispatch = useDispatch()
+
     useEffect(() => { dispatch(allUsersThunk()) }, [])
     useEffect(() => {
         socket.connect()
@@ -19,22 +22,28 @@ const MobileAllConversations = () => {
                 socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
             }
         })
-        return () => socket.removeAllListeners()
     }, [])
 
 
-    // notificationf
+    // notification
     const requestPermission = async () => {
         const permission = await Notification.requestPermission()
         if (permission === "granted") {
             const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
-            await axios.post('http://192.168.1.104:5000/update-notification-token', { email: loggedInUser.email, token })
+            await axios.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
         }
 
     }
     useEffect(() => {
         requestPermission()
     }, [])
+
+
+    useEffect(() => {
+        if (!loggedInUser?._id) {
+            navigate('/login')
+        }
+    }, [loggedInUser])
     return (
         <div className='bg-1 h-[100vh]'>
             <AllConversations />

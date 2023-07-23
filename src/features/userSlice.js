@@ -3,29 +3,23 @@ import axios from 'axios'
 import { socket } from '../socket'
 import { setAllConversations } from './conversationsSlice'
 
-export const signupThunk = createAsyncThunk("signupThunk", async (formData, {dispatch}) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/signup", formData)
-    console.log(data)
+export const signupThunk = createAsyncThunk("signupThunk", async (formData, { dispatch }) => {
+    const { data } = await axios.post("http://localhost:5000/signup", formData)
     dispatch(setAllConversations(data.conversations))
     return data.user
 })
-export const loginThunk = createAsyncThunk("loginThunk", async (userData, {dispatch}) => {
-    const { data } = await axios.post("http://192.168.1.104:5000/login", userData)
+export const loginThunk = createAsyncThunk("loginThunk", async (userData, { dispatch }) => {
+    const { data } = await axios.post("http://localhost:5000/login", userData)
     dispatch(setAllConversations(data.conversations))
     return data.user
 })
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
-    const { data } = await axios.get("http://192.168.1.104:5000/all-users")
+    const { data } = await axios.get("http://localhost:5000/all-users")
     return data;
 })
 
-// export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
-//     const { data } = await axios.post("http://192.168.1.104:5000/update-unread", { conversationID })
-//     return data;
-// })
-
 export const newConversationThunk = createAsyncThunk("newConversationThunk", async (newConversation) => {
-    const res = await axios.post("http://192.168.1.104:5000/add-conversation", newConversation)
+    const res = await axios.post("http://localhost:5000/add-conversation", newConversation)
     return res.data
 })
 
@@ -39,21 +33,9 @@ const userSlice = createSlice({
         allUsers: []
     },
     reducers: {
-        // addNewConversation: (state, action) => {
-        //     return { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...state.loggedInUser.conversations, action.payload] } }
-        // },
         selectReceiver: (state, action) => {
             return { ...state, receiver: action.payload }
         },
-        // updateLastMessage: (state, action) => {
-        //     const newConversation = state.loggedInUser.conversations.map(conversation => {
-        //         if (conversation._id == action.payload.conversationID) {
-        //             conversation = { ...conversation, lastMessage: action.payload }
-        //         }
-        //         return conversation
-        //     })
-        //     return { ...state, loggedInUser: { ...state.loggedInUser, conversations: newConversation } }
-        // },
         updateActiveStatus: (state, action) => {
             const updated = state.allUsers.map(user => {
                 user = { ...user, active: false }
@@ -72,6 +54,7 @@ const userSlice = createSlice({
         logoutUser: (state) => {
             localStorage.removeItem("chat-app")
             socket.disconnect()
+            socket.removeAllListeners()
             return { ...state, loggedInUser: {}, allUsers: [], receiver: {} }
         }
     },
@@ -106,19 +89,6 @@ const userSlice = createSlice({
         builder.addCase(allUsersThunk.fulfilled, (state, action) => {
             return { ...state, allUsers: action.payload, loading: false }
         })
-
-        // builder.addCase(updateUnreadThunk.pending, (state) => {
-        //     return { ...state, loading: true }
-        // })
-        // builder.addCase(updateUnreadThunk.fulfilled, (state, action) => {
-        //     const newConversation = state.loggedInUser.conversations.map(conversation => {
-        //         if (conversation._id == action.payload._id) {
-        //             return action.payload
-        //         }
-        //         return conversation
-        //     })
-        //     return { ...state, loggedInUser: { ...state.loggedInUser, conversations: [...newConversation] } }
-        // })
     }
 })
 export const {

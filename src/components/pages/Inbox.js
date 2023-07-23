@@ -23,8 +23,7 @@ const Inbox = () => {
                 socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
             }
         })
-
-        return () => socket.removeAllListeners()
+        
     }, [])
 
     useEffect(() => {
@@ -43,7 +42,7 @@ const Inbox = () => {
         const permission = await Notification.requestPermission()
         if (permission === "granted") {
             const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
-            await axios.post('http://192.168.1.104:5000/update-notification-token', { email: loggedInUser.email, token })
+            await axios.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
         }
 
     }
