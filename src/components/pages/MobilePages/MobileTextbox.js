@@ -10,7 +10,7 @@ const MobileTextbox = () => {
 
     useEffect(() => {
         if (!loggedInUser?._id) {
-            navigate('/login')
+            navigate('/mobile/conversations')
         }
     }, [loggedInUser])
 

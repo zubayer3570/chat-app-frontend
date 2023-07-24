@@ -45,9 +45,9 @@ const AllConversations = () => {
                             navigate('/login')
                         }} className='px-4 py-2 rounded-full bg-test-3 font-bold text-white'>logout</button>
                     </div>
-                    <div onClick={() => navigate("/mobile/all-users")} className='flex items-center'>
-                        <div className='flex items-center justify-center h-[35px] w-[35px] bg-test-3 rounded-full overflow-hidden'>
-                            <button className='font-bold-md text-white text-[40px]'>+</button>
+                    <div onClick={() => navigate("/mobile/all-users")} className='flex items-center justify-center'>
+                        <div className='flex items-center justify-center h-[35px] w-[35px] bg-test-3 overflow-hidden rounded-full'>
+                            <p className='font-bold-md text-white text-[26px] p-0 m-0 font-bold mb-1'>+</p>
                         </div>
                     </div>
                 </div>

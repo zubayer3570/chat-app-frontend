@@ -2,11 +2,12 @@ import React, { useEffect, useSyncExternalStore } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginThunk } from '../../features/userSlice';
+import Spinner from '../main-components/Spinner';
 
 const Login = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { loggedInUser } = useSelector(state => state.users)
+    const { loggedInUser, loading } = useSelector(state => state.users)
     const handleLogin = (e) => {
         e.preventDefault()
         const data = {
@@ -18,10 +19,12 @@ const Login = () => {
     useEffect(() => {
         if (loggedInUser?._id) {
             navigate("/")
-        } else {
-
         }
     }, [loggedInUser])
+
+    if (loading) {
+        return <Spinner />
+    }
     return (
         <div className='h-[80vh] w-full flex items-center justify-center'>
             <div className='bg-1 w-[450px] p-8 rounded-2xl'>

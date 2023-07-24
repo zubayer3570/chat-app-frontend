@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
@@ -8,16 +8,18 @@ import AllConversations from '../main-components/AllConversations';
 import { getToken } from 'firebase/messaging';
 import axios from 'axios';
 import { messaging } from '../../firebase';
+import { loginThunk } from '../../features/userSlice';
 
 
 const Inbox = () => {
-    const [textBoxHeight, setTextBoxHeight] = useState("100vh")
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
-
     useEffect(() => {
-        socket.connect()
 
+    }, [])
+    useEffect(() => {
+        dispatch(loginThunk())
         socket.on("connect", () => {
             if (loggedInUser?._id) {
                 socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
@@ -38,7 +40,7 @@ const Inbox = () => {
             navigate('/login')
         }
     }, [loggedInUser])
-    
+
     const requestPermission = async () => {
         const permission = await Notification.requestPermission()
         if (permission === "granted") {
@@ -52,7 +54,7 @@ const Inbox = () => {
 
     return (
         <>
-            <div className={`flex bg-1 h-[${textBoxHeight}] lg:h-[100vh]`}>
+            <div className={`flex bg-1 h-[100vh] lg:h-[100vh]`}>
                 <AllConversations />
                 <div className='flex-1 p-2'>
                     <TextBox />
