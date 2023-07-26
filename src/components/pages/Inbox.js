@@ -9,15 +9,13 @@ import { getToken } from 'firebase/messaging';
 import axios from 'axios';
 import { messaging } from '../../firebase';
 import { loginThunk } from '../../features/userSlice';
+import Spinner from '../main-components/Spinner';
 
 
 const Inbox = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { loggedInUser } = useSelector(state => state.users)
-    useEffect(() => {
-
-    }, [])
+    const { loggedInUser, loading } = useSelector(state => state.users)
     useEffect(() => {
         dispatch(loginThunk())
         socket.on("connect", () => {
@@ -35,11 +33,6 @@ const Inbox = () => {
             }
         }
     }, [])
-    useEffect(() => {
-        if (!loggedInUser?._id) {
-            navigate('/login')
-        }
-    }, [loggedInUser])
 
     const requestPermission = async () => {
         const permission = await Notification.requestPermission()
@@ -51,6 +44,13 @@ const Inbox = () => {
     useEffect(() => {
         requestPermission()
     }, [])
+
+    useEffect(() => {
+        if (!loggedInUser?._id && !loading) {
+            navigate('/login')
+        }
+    }, [loading, loggedInUser])
+
 
     return (
         <>

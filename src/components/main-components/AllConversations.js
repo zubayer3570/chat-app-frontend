@@ -13,7 +13,6 @@ const AllConversations = () => {
     const { loggedInUser } = useSelector(state => state.users)
     const {selectedConversation, allConversations} = useSelector(state => state.conversations)
 
-
     useEffect(() => {
         socket.on("new_conversation", (newConversation) => {
             dispatch(addNewConversation(newConversation))

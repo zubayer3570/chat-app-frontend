@@ -9,7 +9,6 @@ module.exports = {
         '1': "rgba(0, 0, 0, 0.24) 0px 3px 8px"
       },
       colors: {
-        "test-1": "#A8AFDC",
         "test-3": "rgb(192, 132, 252)",
         "test-2": "rgb(134, 239, 172)",
       },

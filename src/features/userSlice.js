@@ -75,6 +75,7 @@ const userSlice = createSlice({
             return { ...state, loading: true }
         })
         builder.addCase(loginThunk.fulfilled, (state, action) => {
+            console.log(action.payload)
             if (action.payload._id) {
                 socket.connect()
                 localStorage.setItem("chat-app", JSON.stringify(action.payload))

@@ -3,7 +3,6 @@ import Inbox from './components/pages/Inbox';
 import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
 import { useEffect } from 'react';
-import { socket } from './socket';
 import { loginThunk } from './features/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import MobileAllConversations from './components/pages/MobilePages/MobileAllConversations';
@@ -21,10 +20,6 @@ function App() {
       dispatch(loginThunk(loggedInUser))
     }
   }, [])
-
-
-
-
   return (
     <>
       <Routes>

@@ -12,6 +12,7 @@ const MobileAllUsers = () => {
             navigate('/login')
         }
     }, [loggedInUser])
+    
     return (
         <div className='bg-1 h-[100vh]'>
             <AllUsers />
