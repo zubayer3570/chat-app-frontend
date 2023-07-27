@@ -27,7 +27,7 @@ const Signup = () => {
     }
     useEffect(() => {
         if (loggedInUser?._id) {
-            navigate("/")
+            navigate("/", {state: {doNotVerifyUser: true}})
         }
     }, [loggedInUser])
     if (loading) {

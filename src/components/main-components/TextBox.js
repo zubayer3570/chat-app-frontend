@@ -23,6 +23,8 @@ const TextBox = () => {
     const handleSend = (e) => {
         const _id = nanoid()
         e.preventDefault()
+        console.log(loggedInUser)
+        console.log(receiver)
         const message = {
             _id,
             sender: {

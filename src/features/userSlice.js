@@ -3,14 +3,13 @@ import axios from 'axios'
 import { socket } from '../socket'
 import { setAllConversations } from './conversationsSlice'
 
-const savedUser = JSON.parse(localStorage.getItem("chat-app"))
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData, { dispatch }) => {
     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/signup", formData)
-    dispatch(setAllConversations(data.conversations))
+    dispatch(setAllConversations([]))
     return data.user
 })
-export const loginThunk = createAsyncThunk("loginThunk", async (userData = savedUser, { dispatch }) => {
+export const loginThunk = createAsyncThunk("loginThunk", async (userData = JSON.parse(localStorage.getItem("chat-app")), { dispatch }) => {
     const { data } = await axios.post("https://chat-app-pzz6.onrender.com/login", userData)
     dispatch(setAllConversations(data.conversations))
     return data.user
@@ -66,7 +65,7 @@ const userSlice = createSlice({
         })
         builder.addCase(signupThunk.fulfilled, (state, action) => {
             localStorage.setItem("chat-app", JSON.stringify(action.payload))
-            const data = { ...action.payload, active: true }
+            const data = { ...action.payload}
             return { ...state, loggedInUser: data, loading: false, message: {} }
         })
 
@@ -76,7 +75,7 @@ const userSlice = createSlice({
         })
         builder.addCase(loginThunk.fulfilled, (state, action) => {
             console.log(action.payload)
-            if (action.payload._id) {
+            if (action.payload?._id) {
                 socket.connect()
                 localStorage.setItem("chat-app", JSON.stringify(action.payload))
                 return { ...state, loggedInUser: action.payload, loading: false }

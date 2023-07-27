@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
@@ -13,11 +13,14 @@ import Spinner from '../main-components/Spinner';
 
 
 const Inbox = () => {
+    const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser, loading } = useSelector(state => state.users)
     useEffect(() => {
-        dispatch(loginThunk())
+        if (!location.state?.doNotVerifyUser) {
+            dispatch(loginThunk())
+        }
         socket.on("connect", () => {
             if (loggedInUser?._id) {
                 socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
