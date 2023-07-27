@@ -17,7 +17,9 @@ const AllConversations = () => {
         socket.on("new_conversation", (newConversation) => {
             dispatch(addNewConversation(newConversation))
         })
+        return ()=>socket.removeListener("new_conversation")
     }, [])
+
     useEffect(() => {
         socket.on("new_last_message", (data) => {
             if (selectedConversation._id == data.conversationID) {

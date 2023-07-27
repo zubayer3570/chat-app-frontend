@@ -21,6 +21,7 @@ const conversationsSlice = createSlice({
             return { ...state, selectedConversation: action.payload }
         },
         addNewConversation: (state, action) => {
+            console.log("hi")
             return { ...state, allConversations: [...state.allConversations, action.payload] }
         },
         updateLastMessage: (state, action) => {
