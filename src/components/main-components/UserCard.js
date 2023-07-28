@@ -14,15 +14,25 @@ const UserCard = ({ user }) => {
         dispatch(selectReceiver(user))
         dispatch(clearAllTexts())
         dispatch(selectConversation({}))
-        for (const loggedInUserConversationID of loggedInUser.conversationIDs) {
-            const conversationExists = user.conversationIDs.includes(loggedInUserConversationID)
-            if (conversationExists) {
-                const conversationToBeSelected = allConversations.find(con => con._id == loggedInUserConversationID)
-                dispatch(selectConversation(conversationToBeSelected))
-                dispatch(getTextsThunk(loggedInUserConversationID))
-                break;
+
+        for (let i = 0; i < allConversations.length; i++) {
+            for (let j = 0; j < user.conversationIDs.length; j++) {
+                if (allConversations[i]._id == user.conversationIDs[j]) {
+                    dispatch(getTextsThunk(allConversations[i]._id))
+                    dispatch(selectConversation(allConversations[i]))
+                    break;
+                }
             }
         }
+        // for (const loggedInUserConversationID of loggedInUser.conversationIDs) {
+        //     const conversationExists = user.conversationIDs.includes(loggedInUserConversationID)
+        //     if (conversationExists) {
+        //         const conversationToBeSelected = allConversations.find(con => con._id == loggedInUserConversationID)
+        //         dispatch(selectConversation(conversationToBeSelected))
+        //         dispatch(getTextsThunk(loggedInUserConversationID))
+        //         break;
+        //     }
+        // }
 
         if (window.location.pathname.includes("mobile")) {
             navigate("/mobile/textbox")

@@ -21,17 +21,21 @@ const conversationsSlice = createSlice({
             return { ...state, selectedConversation: action.payload }
         },
         addNewConversation: (state, action) => {
-            console.log("hi")
-            return { ...state, allConversations: [...state.allConversations, action.payload] }
+            return { ...state, allConversations: [action.payload, ...state.allConversations] }
         },
         updateLastMessage: (state, action) => {
-            const newConversation = state.allConversations.map(conversation => {
-                if (conversation._id == action.payload.conversationID) {
-                    conversation = { ...conversation, lastMessage: action.payload }
-                }
-                return conversation
-            })
-            return { ...state, allConversations: [...newConversation] }
+            const tempConversation = state.allConversations.filter(conversation => conversation._id != action.payload.conversationID)
+            let targetConversation = state.allConversations.find(conversation => conversation._id == action.payload.conversationID)
+            targetConversation = {...targetConversation, lastMessage: action.payload}
+            
+            // const newConversation = state.allConversations.map(conversation => {
+            //     if (conversation._id == action.payload.conversationID) {
+            //         conversation = { ...conversation, lastMessage: action.payload }
+            //     }
+            //     return conversation
+            // })
+
+            return { ...state, allConversations: [targetConversation, ...tempConversation] }
         },
     },
     extraReducers: (builder) => {

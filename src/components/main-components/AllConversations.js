@@ -11,13 +11,13 @@ const AllConversations = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
-    const {selectedConversation, allConversations} = useSelector(state => state.conversations)
+    const { selectedConversation, allConversations } = useSelector(state => state.conversations)
 
     useEffect(() => {
         socket.on("new_conversation", (newConversation) => {
             dispatch(addNewConversation(newConversation))
         })
-        return ()=>socket.removeListener("new_conversation")
+        return () => socket.removeListener("new_conversation")
     }, [])
 
     useEffect(() => {
@@ -28,8 +28,8 @@ const AllConversations = () => {
             }
             dispatch(updateLastMessage(data))
         })
-        return () => { socket.off("new_last_message") }
-    }, [selectedConversation])
+        return () => socket.removeListener("new_last_message")
+    }, [])
 
     return (
         <div className={'overflow-auto ' + style.hideScrollbar}>

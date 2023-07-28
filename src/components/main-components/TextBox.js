@@ -9,8 +9,7 @@ import { createNewConversation } from '../../customFunctions.js/createNewConvers
 import { newConversationThunk } from '../../features/userSlice';
 import { selectConversation } from '../../features/conversationsSlice';
 import { addNewConversation, updateLastMessage } from '../../features/conversationsSlice';
-import { messaging } from '../../firebase';
-import { getMessaging } from 'firebase/messaging';
+import Spinner from './Spinner';
 const { nanoid } = require("nanoid")
 
 
@@ -18,7 +17,7 @@ const TextBox = () => {
     const navigate = useNavigate()
     const { loggedInUser, receiver } = useSelector(state => state.users)
     const { selectedConversation } = useSelector(state => state.conversations)
-    const { texts } = useSelector(state => state.texts)
+    const { texts, loading } = useSelector(state => state.texts)
     const dispatch = useDispatch()
     const handleSend = (e) => {
         const _id = nanoid()
@@ -69,12 +68,13 @@ const TextBox = () => {
                 dispatch(addText(data))
             }
         })
+        return ()=>socket.removeListener("new_message")
     }, [selectedConversation])
 
     useEffect(() => {
         document.getElementById("tool")?.scrollIntoView()
     }, [texts])
-
+    
     return (
         <>
             <div className='flex flex-col justify-between relative shadow-1 h-full rounded-2xl'>
@@ -96,7 +96,10 @@ const TextBox = () => {
                             </div>
                             <div className={'overflow-auto pt-[50px] pb-4 ' + style.hideScrollbar} >
                                 {
-                                    texts?.map(text => <Text text={text} key={text._id} />)
+                                    loading ?
+                                        <Spinner />
+                                        :
+                                        texts?.map(text => <Text text={text} key={text._id} />)
                                 }
                                 <div id='tool' ></div>
                             </div>

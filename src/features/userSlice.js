@@ -38,16 +38,19 @@ const userSlice = createSlice({
             return { ...state, receiver: action.payload }
         },
         updateActiveStatus: (state, action) => {
-            const updated = state.allUsers.map(user => {
-                user = { ...user, active: false }
-                action.payload.forEach(activeUserEmail => {
-                    if (activeUserEmail == user.email) {
-                        user = { ...user, active: true }
+            const temp = [...state.allUsers];
+            let activeUserEmail = [...action.payload]
+            for (let i = 0; i < temp.length; i++) {
+                temp[i] = { ...temp[i], active: false }
+                for (let j = 0; j < activeUserEmail.length; j++) {
+                    if (activeUserEmail[j] == temp[i].email) {
+                        temp[i] = { ...temp[i], active: true }
+                        activeUserEmail.splice(j, 1)
+                        break;
                     }
-                })
-                return user
-            })
-            return { ...state, allUsers: updated }
+                }
+            }
+            return { ...state, allUsers: temp }
         },
         addNewUser: (state, action) => {
             return { ...state, allUsers: [...state.allUsers, action.payload] }
@@ -65,7 +68,7 @@ const userSlice = createSlice({
         })
         builder.addCase(signupThunk.fulfilled, (state, action) => {
             localStorage.setItem("chat-app", JSON.stringify(action.payload))
-            const data = { ...action.payload}
+            const data = { ...action.payload }
             return { ...state, loggedInUser: data, loading: false, message: {} }
         })
 
