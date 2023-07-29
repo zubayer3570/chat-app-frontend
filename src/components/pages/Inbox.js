@@ -41,7 +41,7 @@ const Inbox = () => {
         const permission = await Notification.requestPermission()
         if (permission === "granted") {
             const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
-            await axios.post('https://chat-app-pzz6.onrender.com/update-notification-token', { email: loggedInUser.email, token })
+            await axios.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
         }
     }
     useEffect(() => {

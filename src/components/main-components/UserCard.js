@@ -24,15 +24,6 @@ const UserCard = ({ user }) => {
                 }
             }
         }
-        // for (const loggedInUserConversationID of loggedInUser.conversationIDs) {
-        //     const conversationExists = user.conversationIDs.includes(loggedInUserConversationID)
-        //     if (conversationExists) {
-        //         const conversationToBeSelected = allConversations.find(con => con._id == loggedInUserConversationID)
-        //         dispatch(selectConversation(conversationToBeSelected))
-        //         dispatch(getTextsThunk(loggedInUserConversationID))
-        //         break;
-        //     }
-        // }
 
         if (window.location.pathname.includes("mobile")) {
             navigate("/mobile/textbox")

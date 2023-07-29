@@ -18,12 +18,3 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
-// export const requestPermission = async () => {
-//     const permission = await Notification.requestPermission()
-//     if (permission === "granted") {
-//         const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
-//         await axios.post('https://chat-app-pzz6.onrender.com/update-notification-token', {email: })
-//         console.log(token)
-//     }
-
-// }

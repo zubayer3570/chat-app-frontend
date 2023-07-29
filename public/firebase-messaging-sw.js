@@ -22,6 +22,10 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationOptions = {
     body: payload.data.message,
   };
+  self.addEventListener("notificationclick", function(event){
+    event.waitUntil(self.clients.openWindow(payload.data.url))
+    event.notification.close();
+  })
   self.registration.showNotification(notificationTitle,
     notificationOptions);
 });

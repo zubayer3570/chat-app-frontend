@@ -4,7 +4,7 @@ const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
 // have to update the imports
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
-    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/update-unread", { conversationID })
+    const { data } = await axios.post("http://localhost:5000/update-unread", { conversationID })
     return data;
 })
 
@@ -27,14 +27,6 @@ const conversationsSlice = createSlice({
             const tempConversation = state.allConversations.filter(conversation => conversation._id != action.payload.conversationID)
             let targetConversation = state.allConversations.find(conversation => conversation._id == action.payload.conversationID)
             targetConversation = {...targetConversation, lastMessage: action.payload}
-            
-            // const newConversation = state.allConversations.map(conversation => {
-            //     if (conversation._id == action.payload.conversationID) {
-            //         conversation = { ...conversation, lastMessage: action.payload }
-            //     }
-            //     return conversation
-            // })
-
             return { ...state, allConversations: [targetConversation, ...tempConversation] }
         },
     },
