@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendTextThunk, addText } from '../../features/textSlice';
+import { sendTextThunk, addText, receiverTyping, receiverStoppedTyping } from '../../features/textSlice';
 import Text from './Text';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,12 @@ const TextBox = () => {
     const { selectedConversation } = useSelector(state => state.conversations)
     const { texts, loading } = useSelector(state => state.texts)
     const dispatch = useDispatch()
+    const userTyping = () => {
+        socket.emit("typing", { typingUser: loggedInUser, receiver })
+    }
+    const userStoppedTyping = () => {
+        socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
+    }
     const handleSend = (e) => {
         const _id = nanoid()
         e.preventDefault()
@@ -68,13 +74,29 @@ const TextBox = () => {
                 dispatch(addText(data))
             }
         })
-        return ()=>socket.removeListener("new_message")
+        return () => socket.removeListener("new_message")
     }, [selectedConversation])
 
     useEffect(() => {
         document.getElementById("tool")?.scrollIntoView()
     }, [texts])
-    
+    useEffect(() => {
+        socket.on("typing", (data) => {
+            if (receiver.email == data.typingUser.email) {
+                dispatch(receiverTyping(data.typingUser))
+            }
+        })
+        socket.on("typingStopped", (data) => {
+            console.log(data)
+            if (receiver.email == data.typingUser.email) {
+                dispatch(receiverStoppedTyping())
+            }
+        })
+        return () => {
+            socket.removeListener("typing")
+            socket.removeListener("typingStopped")
+        }
+    }, [receiver])
     return (
         <>
             <div className='flex flex-col justify-between relative shadow-1 h-full rounded-2xl'>
@@ -104,7 +126,7 @@ const TextBox = () => {
                                 <div id='tool' ></div>
                             </div>
                             <form onSubmit={handleSend} className='flex bottom-0 w-full px-4 mb-3'>
-                                <input type="text" name="text" className='grow h-[35px] rounded-l-full px-4' />
+                                <input onFocus={userTyping} onBlur={userStoppedTyping} type="text" name="text" className='grow h-[35px] rounded-l-full px-4' />
                                 <button type="submit" className='font-bold bg-test-3 h-[35px] rounded-r-full px-4 flex items-center'>
                                     <img src='/send.svg' className='h-[22px] w-[22px]' />
                                 </button>

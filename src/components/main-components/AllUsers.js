@@ -5,6 +5,7 @@ import UserCard from './UserCard';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
+import Typing from './Typing/Typing';
 
 const AllUsers = () => {
     const { loggedInUser, allUsers } = useSelector(state => state.users)
