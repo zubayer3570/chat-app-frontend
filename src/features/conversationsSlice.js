@@ -4,7 +4,7 @@ const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
 // have to update the imports
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (conversationID) => {
-    const { data } = await axios.post("http://localhost:5000/update-unread", { conversationID })
+    const { data } = await axios.post("https://chat-app-pzz6.onrender.com/update-unread", { conversationID })
     return data;
 })
 
