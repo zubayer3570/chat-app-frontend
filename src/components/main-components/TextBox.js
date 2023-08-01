@@ -14,22 +14,27 @@ const { nanoid } = require("nanoid")
 
 
 const TextBox = () => {
+    let userTyping = false;
     const navigate = useNavigate()
     const { loggedInUser, receiver } = useSelector(state => state.users)
     const { selectedConversation } = useSelector(state => state.conversations)
     const { texts, loading } = useSelector(state => state.texts)
     const dispatch = useDispatch()
-    const userTyping = () => {
-        socket.emit("typing", { typingUser: loggedInUser, receiver })
+    const userTypingHandler = (e) => {
+        if (e.target.value.length > 0) {
+            if (!userTyping) {
+                socket.emit("typing", { typingUser: loggedInUser, receiver })
+                userTyping = true
+            }
+        } else {
+            socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
+            userTyping = false
+        }
     }
-    const userStoppedTyping = () => {
-        socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
-    }
+
     const handleSend = (e) => {
-        const _id = nanoid()
         e.preventDefault()
-        console.log(loggedInUser)
-        console.log(receiver)
+        const _id = nanoid()
         const message = {
             _id,
             sender: {
@@ -66,7 +71,7 @@ const TextBox = () => {
         socket.emit("new_message", message)
         socket.emit("new_last_message", message)
         dispatch(sendTextThunk(message))
-        e.target.text.value = ""
+        e.target.value = ""
     }
     useEffect(() => {
         socket.on("new_message", (data) => {
@@ -87,7 +92,6 @@ const TextBox = () => {
             }
         })
         socket.on("typingStopped", (data) => {
-            console.log(data)
             if (receiver.email == data.typingUser.email) {
                 dispatch(receiverStoppedTyping())
             }
@@ -126,7 +130,7 @@ const TextBox = () => {
                                 <div id='tool' ></div>
                             </div>
                             <form onSubmit={handleSend} className='flex bottom-0 w-full px-4 mb-3'>
-                                <input onFocus={userTyping} onBlur={userStoppedTyping} type="text" name="text" className='grow h-[35px] rounded-l-full px-4' />
+                                <input onChange={userTypingHandler} type="text" name="text" className='grow h-[35px] rounded-l-full px-4' />
                                 <button type="submit" className='font-bold bg-test-3 h-[35px] rounded-r-full px-4 flex items-center'>
                                     <img src='/send.svg' className='h-[22px] w-[22px]' />
                                 </button>
