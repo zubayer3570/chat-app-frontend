@@ -2,11 +2,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message) => {
-    await axios.post("http://localhost:5000/send-text", message)
+    await axios.post("https://chat-app-pzz6.onrender.com/send-text", message)
 })
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationID) => {
-    const res = await axios.post("http://localhost:5000/get-texts", { conversationID })
+    const res = await axios.post("https://chat-app-pzz6.onrender.com/get-texts", { conversationID })
     return res.data
 })
 
@@ -34,7 +34,9 @@ const textSlice = createSlice({
         },
         receiverStoppedTyping: (state) => {
             const tempTexts = [...state.texts]
+            
             if (tempTexts[tempTexts.length - 1].typing) {
+                // console.log("hello-typing")
                 tempTexts.pop()
             }
             return { ...state, texts: [...tempTexts] }

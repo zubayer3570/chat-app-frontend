@@ -20,6 +20,7 @@ const TextBox = () => {
     const { selectedConversation } = useSelector(state => state.conversations)
     const { texts, loading } = useSelector(state => state.texts)
     const dispatch = useDispatch()
+
     const userTypingHandler = (e) => {
         if (e.target.value.length > 0) {
             if (!userTyping) {
@@ -34,6 +35,7 @@ const TextBox = () => {
 
     const handleSend = (e) => {
         e.preventDefault()
+
         const _id = nanoid()
         const message = {
             _id,
@@ -66,13 +68,15 @@ const TextBox = () => {
             dispatch(selectConversation(newConversation))
         }
 
+        socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
         dispatch(addText(message))
         dispatch(updateLastMessage(message))
         socket.emit("new_message", message)
         socket.emit("new_last_message", message)
         dispatch(sendTextThunk(message))
-        e.target.value = ""
+        e.target.text.value = ""
     }
+
     useEffect(() => {
         socket.on("new_message", (data) => {
             if (selectedConversation._id == data.conversationID) {
@@ -85,6 +89,7 @@ const TextBox = () => {
     useEffect(() => {
         document.getElementById("tool")?.scrollIntoView()
     }, [texts])
+
     useEffect(() => {
         socket.on("typing", (data) => {
             if (receiver.email == data.typingUser.email) {
@@ -93,6 +98,7 @@ const TextBox = () => {
         })
         socket.on("typingStopped", (data) => {
             if (receiver.email == data.typingUser.email) {
+                // console.log("hello-typing")
                 dispatch(receiverStoppedTyping())
             }
         })
@@ -101,6 +107,7 @@ const TextBox = () => {
             socket.removeListener("typingStopped")
         }
     }, [receiver])
+
     return (
         <>
             <div className='flex flex-col justify-between relative shadow-1 h-full rounded-2xl'>
@@ -130,10 +137,15 @@ const TextBox = () => {
                                 <div id='tool' ></div>
                             </div>
                             <form onSubmit={handleSend} className='flex bottom-0 w-full px-4 mb-3'>
+
+                                {/* Message text input */}
                                 <input onChange={userTypingHandler} type="text" name="text" className='grow h-[35px] rounded-l-full px-4' />
+
+                                {/* submit button */}
                                 <button type="submit" className='font-bold bg-test-3 h-[35px] rounded-r-full px-4 flex items-center'>
                                     <img src='/send.svg' className='h-[22px] w-[22px]' />
                                 </button>
+
                             </form>
                         </>
                         :
