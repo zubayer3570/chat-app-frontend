@@ -18,12 +18,20 @@ const AllUsers = () => {
     }
 
     useEffect(() => {
+
         socket.on("active_status_updated", (data) => {
             dispatch(updateActiveStatus(data))
         })
         socket.on("new_user", (data) => {
+            console.log("heheheheh")
             dispatch(addNewUser(data))
         })
+
+        return () => {
+            socket.off("new_user")
+            socket.off("active_status_updated")
+        }
+
     }, [])
 
     return (

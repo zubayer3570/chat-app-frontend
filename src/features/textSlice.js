@@ -14,6 +14,7 @@ const textSlice = createSlice({
     name: "textSlice",
     initialState: {
         texts: [],
+        typingReceiver: null,
         loading: false
     },
     reducers: {
@@ -24,22 +25,10 @@ const textSlice = createSlice({
             return { ...state, texts: [] }
         },
         receiverTyping: (state, { payload }) => {
-            const message = {
-                _id: "demo-id",
-                sender: payload,
-                receiver: {},
-                typing: true
-            }
-            return { ...state, texts: [...state.texts, message] }
+            return { ...state, typingReceiver: payload }
         },
         receiverStoppedTyping: (state) => {
-            const tempTexts = [...state.texts]
-            
-            if (tempTexts[tempTexts.length - 1].typing) {
-                // console.log("hello-typing")
-                tempTexts.pop()
-            }
-            return { ...state, texts: [...tempTexts] }
+            return { ...state, typingReceiver: null }
         }
     },
     extraReducers: (builder) => {

@@ -78,6 +78,9 @@ const userSlice = createSlice({
             const data = { ...action.payload }
             return { ...state, loggedInUser: data, loading: false, message: {} }
         })
+        builder.addCase(signupThunk.rejected, (state, action) => {
+            console.log("Signup error Payload: ", action.payload)
+        })
 
 
         builder.addCase(loginThunk.pending, (state) => {

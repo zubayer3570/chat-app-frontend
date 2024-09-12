@@ -17,7 +17,7 @@ const AllConversations = () => {
         socket.on("new_conversation", (newConversation) => {
             dispatch(addNewConversation(newConversation))
         })
-        return () => socket.removeListener("new_conversation")
+        return () => socket.off("new_conversation")
     }, [])
 
     useEffect(() => {

@@ -8,6 +8,8 @@ const Signup = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser, loading } = useSelector(state => state.users)
+
+    // signup handling function
     const handleSignup = (e) => {
         e.preventDefault()
         const formData = new FormData()
@@ -18,6 +20,8 @@ const Signup = () => {
         formData.append("active", false)
         dispatch(signupThunk(formData))
     }
+
+    // getting profile image and diplaying the name of the image
     const getFile = (e) => {
         e.preventDefault()
         document.getElementById("imgFile").click()
@@ -25,14 +29,17 @@ const Signup = () => {
     const setFileName = (e) => {
         document.getElementById("fileName").innerHTML = e.target.files[0].name
     }
+
     useEffect(() => {
         if (loggedInUser?._id) {
             navigate("/", {state: {doNotVerifyUser: true}})
         }
     }, [loggedInUser])
+
     if (loading) {
         return <Spinner />
     }
+    
     return (
         <div className='h-[80vh] w-full flex items-center justify-center px-4'>
             <div className='bg-1 w-[450px] p-8 rounded-2xl'>

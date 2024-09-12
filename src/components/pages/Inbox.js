@@ -15,11 +15,17 @@ const Inbox = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
     const { loggedInUser, receiver, loading } = useSelector(state => state.users)
+
     useEffect(() => {
-        if (!location.state?.doNotVerifyUser) {
-            dispatch(loginThunk())
-        }
+        
+        dispatch(loginThunk())
+
+        // if (!location.state?.doNotVerifyUser) {
+        //     dispatch(loginThunk())
+        // }
+
         socket.on("connect", () => {
             if (loggedInUser?._id) {
                 socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })

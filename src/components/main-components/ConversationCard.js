@@ -12,6 +12,8 @@ const ConversationCard = ({ conversation }) => {
     const { loggedInUser, allUsers } = useSelector(state => state.users)
     const conReceiverID = conversation?.participantsIDs?.split("###").filter(id => !(loggedInUser._id == id))[0]
     const target = allUsers.find(user => user._id == conReceiverID)
+
+
     const handleCick = () => {
         dispatch(selectReceiver(target))
         dispatch(selectConversation(conversation))
@@ -25,6 +27,8 @@ const ConversationCard = ({ conversation }) => {
             navigate('/mobile/textbox')
         }
     }
+
+    
     return (
         <div className='p-2'>
             <div onClick={handleCick} className='flex justify-between items-center px-4 bg-test-2 w-full lg:w-[280px] h-[80px] rounded-md cursor-pointer shadow-1'>

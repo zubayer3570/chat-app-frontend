@@ -10,6 +10,7 @@ import { newConversationThunk } from '../../features/userSlice';
 import { selectConversation } from '../../features/conversationsSlice';
 import { addNewConversation, updateLastMessage } from '../../features/conversationsSlice';
 import Spinner from './Spinner';
+import Typing from './Typing/Typing';
 const { nanoid } = require("nanoid")
 
 
@@ -18,7 +19,7 @@ const TextBox = () => {
     const navigate = useNavigate()
     const { loggedInUser, receiver } = useSelector(state => state.users)
     const { selectedConversation } = useSelector(state => state.conversations)
-    const { texts, loading } = useSelector(state => state.texts)
+    const { texts, loading, typingReceiver } = useSelector(state => state.texts)
     const dispatch = useDispatch()
 
     const userTypingHandler = (e) => {
@@ -98,13 +99,13 @@ const TextBox = () => {
         })
         socket.on("typingStopped", (data) => {
             if (receiver.email == data.typingUser.email) {
-                // console.log("hello-typing")
+                console.log("typing stopped ----")
                 dispatch(receiverStoppedTyping())
             }
         })
         return () => {
-            socket.removeListener("typing")
-            socket.removeListener("typingStopped")
+            socket.off("typing")
+            socket.off("typingStopped")
         }
     }, [receiver])
 
@@ -127,21 +128,30 @@ const TextBox = () => {
                                     <p className='font-bold'>{receiver.name}</p>
                                 </div>
                             </div>
+
                             <div className={'overflow-auto pt-[50px] pb-4 ' + style.hideScrollbar} >
                                 {
                                     loading ?
                                         <Spinner />
                                         :
-                                        texts?.map(text => <Text text={text} key={text._id} />)
+                                        texts?.map(text => <Text textDetails={text} key={text._id} />)
                                 }
+                                <div>
+                                    {
+                                        typingReceiver ?
+                                            <Typing receiverProfileImage={receiver.profileImg} />
+                                            :
+                                            ""
+                                    }
+                                </div>
                                 <div id='tool' ></div>
                             </div>
+
+                            {/* text input form */}
                             <form onSubmit={handleSend} className='flex bottom-0 w-full px-4 mb-3'>
 
-                                {/* Message text input */}
                                 <input onChange={userTypingHandler} type="text" name="text" className='grow h-[35px] rounded-l-full px-4' />
 
-                                {/* submit button */}
                                 <button type="submit" className='font-bold bg-test-3 h-[35px] rounded-r-full px-4 flex items-center'>
                                     <img src='/send.svg' className='h-[22px] w-[22px]' />
                                 </button>
