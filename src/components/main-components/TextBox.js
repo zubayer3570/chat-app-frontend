@@ -5,13 +5,9 @@ import Text from './Text';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
-import { createNewConversation } from '../../customFunctions.js/createNewConversation';
-import { newConversationThunk } from '../../features/userSlice';
-import { selectConversation } from '../../features/conversationsSlice';
-import { addNewConversation, updateLastMessage } from '../../features/conversationsSlice';
 import Spinner from './Spinner';
 import Typing from './Typing/Typing';
-const { nanoid } = require("nanoid")
+import { newConversationThunk } from '../../features/conversationsSlice';
 
 
 const TextBox = () => {
@@ -37,50 +33,34 @@ const TextBox = () => {
     const handleSend = (e) => {
         e.preventDefault()
 
-        const _id = nanoid()
         const message = {
-            _id,
-            sender: {
-                _id: loggedInUser._id,
-                name: loggedInUser.name,
-                email: loggedInUser.email,
-                profileImg: loggedInUser.profileImg,
-                notificationToken: loggedInUser.notificationToken
-            },
-            receiver: {
-                _id: receiver._id,
-                name: receiver.name,
-                email: receiver.email,
-                profileImg: receiver.profileImg,
-                notificationToken: receiver.notificationToken
-            },
+            sender: loggedInUser?._id,
+            receiver: receiver?._id,
             text: e.target.text.value,
             unread: true,
-            conversationID: selectedConversation._id
+            conversationID: selectedConversation?._id
         }
 
+        // if it is a new conversation
         if (!message.conversationID) {
-            let newConversation = createNewConversation(loggedInUser, receiver)
-            message.conversationID = newConversation._id
-            newConversation = { ...newConversation, lastMessage: message }
-            socket.emit("new_conversation", newConversation)
-            dispatch(addNewConversation(newConversation))
-            dispatch(newConversationThunk(newConversation))
-            dispatch(selectConversation(newConversation))
+            const newConversation = {
+                participantsIDs: loggedInUser?._id + "###" + receiver?._id,
+                lastMessage: null
+            }
+            // newConversation = { ...newConversation, lastMessage: message }
+            dispatch(newConversationThunk({newConversation, message}))
+        } else {
+            console.log("hi")
+            dispatch(sendTextThunk(message))
         }
 
         socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
-        dispatch(addText(message))
-        dispatch(updateLastMessage(message))
-        socket.emit("new_message", message)
-        socket.emit("new_last_message", message)
-        dispatch(sendTextThunk(message))
         e.target.text.value = ""
     }
 
     useEffect(() => {
         socket.on("new_message", (data) => {
-            if (selectedConversation._id == data.conversationID) {
+            if (selectedConversation?._id === data.conversationID && data?.receiver?._id === loggedInUser?._id) {
                 dispatch(addText(data))
             }
         })
@@ -93,13 +73,12 @@ const TextBox = () => {
 
     useEffect(() => {
         socket.on("typing", (data) => {
-            if (receiver.email == data.typingUser.email) {
+            if (receiver.email === data.typingUser.email) {
                 dispatch(receiverTyping(data.typingUser))
             }
         })
         socket.on("typingStopped", (data) => {
-            if (receiver.email == data.typingUser.email) {
-                console.log("typing stopped ----")
+            if (receiver.email === data.typingUser.email) {
                 dispatch(receiverStoppedTyping())
             }
         })
@@ -134,7 +113,7 @@ const TextBox = () => {
                                     loading ?
                                         <Spinner />
                                         :
-                                        texts?.map(text => <Text textDetails={text} key={text._id} />)
+                                        texts?.map(text => <Text textDetails={text} key={text?._id} />)
                                 }
                                 <div>
                                     {
@@ -150,7 +129,7 @@ const TextBox = () => {
                             {/* text input form */}
                             <form onSubmit={handleSend} className='flex bottom-0 w-full px-4 mb-3'>
 
-                                <input onChange={userTypingHandler} type="text" name="text" className='grow h-[35px] rounded-l-full px-4' />
+                                <input onChange={userTypingHandler} type="text" name="text" className='grow h-[35px] rounded-l-full px-4' required />
 
                                 <button type="submit" className='font-bold bg-test-3 h-[35px] rounded-r-full px-4 flex items-center'>
                                     <img src='/send.svg' className='h-[22px] w-[22px]' />

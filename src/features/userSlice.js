@@ -25,11 +25,6 @@ export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
     return data;
 })
 
-export const newConversationThunk = createAsyncThunk("newConversationThunk", async (newConversation) => {
-    const res = await axios.post("http://localhost:5000/add-conversation", newConversation)
-    return res.data
-})
-
 const userSlice = createSlice({
     name: "userSlice",
     initialState: {
@@ -49,7 +44,7 @@ const userSlice = createSlice({
             for (let i = 0; i < temp.length; i++) {
                 temp[i] = { ...temp[i], active: false }
                 for (let j = 0; j < activeUserEmail.length; j++) {
-                    if (activeUserEmail[j] == temp[i].email) {
+                    if (activeUserEmail[j] === temp[i].email) {
                         temp[i] = { ...temp[i], active: true }
                         activeUserEmail.splice(j, 1)
                         break;

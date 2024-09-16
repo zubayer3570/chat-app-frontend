@@ -17,8 +17,8 @@ const UserCard = ({ user }) => {
 
         for (let i = 0; i < allConversations.length; i++) {
             for (let j = 0; j < user.conversationIDs.length; j++) {
-                if (allConversations[i]._id == user.conversationIDs[j]) {
-                    dispatch(getTextsThunk(allConversations[i]._id))
+                if (allConversations[i]?._id === user.conversationIDs[j]) {
+                    dispatch(getTextsThunk(allConversations[i]?._id))
                     dispatch(selectConversation(allConversations[i]))
                     break;
                 }
@@ -30,7 +30,7 @@ const UserCard = ({ user }) => {
         }
     }
     return (
-        <div onClick={handleClick} className='flex items-center justify-between px-8 lg:px-4 py-2 lg:w-[250px] rounded-md m-4 lg:m-2 cursor-pointer bg-test-3 shadow-1 text-white' key={user._id} >
+        <div onClick={handleClick} className='flex items-center justify-between px-8 lg:px-4 py-2 lg:w-[250px] rounded-md m-4 lg:m-2 cursor-pointer bg-test-3 shadow-1 text-white' key={user?._id} >
             <div className='flex items-center'>
                 <div className='w-[35px] h-[35px] mr-4 rounded-full overflow-hidden'>
                     <img src={user.profileImg} alt="" />

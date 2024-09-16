@@ -11,10 +11,11 @@ const AllConversations = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
-    const { selectedConversation, allConversations } = useSelector(state => state.conversations)
+    const { allConversations, selectedConversation } = useSelector(state => state.conversations)
 
     useEffect(() => {
         socket.on("new_conversation", (newConversation) => {
+            console.log("new conv", newConversation)
             dispatch(addNewConversation(newConversation))
         })
         return () => socket.off("new_conversation")
@@ -22,7 +23,7 @@ const AllConversations = () => {
 
     useEffect(() => {
         socket.on("new_last_message", (data) => {
-            if (selectedConversation._id == data.conversationID) {
+            if (selectedConversation?._id === data.conversationID) {
                 data.unread = false
                 dispatch(updateUnreadThunk(data.conversationID))
             }
@@ -64,7 +65,7 @@ const AllConversations = () => {
             <div>
                 <div className='w-[280px] h-[1px] mx-2'></div>
                 {
-                    allConversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation._id} />)
+                    allConversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation?._id} />)
                 }
             </div>
         </div>

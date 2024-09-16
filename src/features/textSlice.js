@@ -1,8 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { socket } from "../socket";
+import { updateLastMessage } from "./conversationsSlice";
 
-export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message) => {
-    await axios.post("http://localhost:5000/send-text", message)
+export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, { getState, dispatch }) => {
+    const res = await axios.post("http://localhost:5000/send-text", message)
+    const { loggedInUser, receiver } = getState().users
+    const newMessage = { ...res.data.message, sender: loggedInUser, receiver: receiver }
+    dispatch(updateLastMessage(newMessage))
+
+    socket.emit("new_message", newMessage)
+    socket.emit("new_last_message", newMessage)
+
+    return { ...res.data.message, sender: loggedInUser, receiver: receiver }
 })
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationID) => {
@@ -37,6 +47,10 @@ const textSlice = createSlice({
         })
         builder.addCase(getTextsThunk.fulfilled, (state, action) => {
             return { ...state, texts: action.payload, loading: false }
+        })
+
+        builder.addCase(sendTextThunk.fulfilled, (state, action) => {
+            return { ...state, texts: [...state.texts, action.payload] }
         })
     }
 })

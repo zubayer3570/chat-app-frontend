@@ -26,6 +26,7 @@ const Signup = () => {
         e.preventDefault()
         document.getElementById("imgFile").click()
     }
+    
     const setFileName = (e) => {
         document.getElementById("fileName").innerHTML = e.target.files[0].name
     }

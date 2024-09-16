@@ -52,6 +52,7 @@ const Inbox = () => {
             await axios.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
         }
     }
+    
     useEffect(() => {
         requestPermission()
     }, [])

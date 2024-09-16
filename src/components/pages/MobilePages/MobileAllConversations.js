@@ -17,7 +17,7 @@ const MobileAllConversations = () => {
     useEffect(() => {
         dispatch(loginThunk())
         socket.on("connect", () => {
-            if (loggedInUser._id) {
+            if (loggedInUser?._id) {
                 socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
             }
         })

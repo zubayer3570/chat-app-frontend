@@ -47,10 +47,10 @@ const AllUsers = () => {
             <div className={"overflow-auto"}>
                 {
                     allUsers?.map(user => {
-                        if (user._id == loggedInUser._id) {
+                        if (user?._id === loggedInUser?._id) {
                             return
                         }
-                        return <UserCard user={user} key={user._id} />
+                        return <UserCard user={user} key={user?._id} />
                     })
                 }
             </div>

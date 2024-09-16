@@ -4,7 +4,7 @@ import Typing from './Typing/Typing';
 
 const Text = ({ textDetails, img }) => {
     const { loggedInUser } = useSelector(state => state.users)
-    const senderIsTheUser = loggedInUser._id == textDetails.sender._id
+    const senderIsTheUser = loggedInUser?._id === textDetails?.sender?._id
     return (
         <div className={`flex items-end ${senderIsTheUser ? "justify-end" : ""} px-4 max-w-full m-2 cursor-pointer`}>
             <div className={`w-[40px] h-[40px] rounded-full overflow-hidden bg-red-500 mr-4 ${senderIsTheUser ? "order-2" : ''}`}>
