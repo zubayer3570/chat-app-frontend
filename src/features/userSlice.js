@@ -2,19 +2,19 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { socket } from '../socket'
 import { setAllConversations } from './conversationsSlice'
+import {jwtDecode} from "jwt-decode"
 
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData, { dispatch }) => {
-    const { data } = await axios.post("http://localhost:5000/signup", formData)
+    const res = await axios.post("http://localhost:5000/signup", formData)
     dispatch(setAllConversations([]))
-    return data.user
+    return res.data
 })
 
 export const loginThunk = createAsyncThunk("loginThunk", async (userData = JSON.parse(localStorage.getItem("chat-app")), { dispatch, rejectWithValue }) => {
     try {
         const res = await axios.post("http://localhost:5000/login", userData)
-        dispatch(setAllConversations(res.data?.conversations))
-        return res.data.user
+        return res.data
     } catch (err) {
         return rejectWithValue(err.response.data.message)
     }
@@ -69,9 +69,11 @@ const userSlice = createSlice({
             return { ...state, loading: true }
         })
         builder.addCase(signupThunk.fulfilled, (state, action) => {
-            localStorage.setItem("chat-app", JSON.stringify(action.payload))
-            const data = { ...action.payload }
-            return { ...state, loggedInUser: data, loading: false, message: {} }
+            if (action.payload.accessToken){
+                localStorage.setItem("chat-app", JSON.stringify(action.payload))
+            }
+            const user = jwtDecode(action.payload.accessToken)
+            return { ...state, loggedInUser: user, loading: false, message: {} }
         })
         builder.addCase(signupThunk.rejected, (state, action) => {
             console.log("Signup error Payload: ", action.payload)
@@ -82,10 +84,12 @@ const userSlice = createSlice({
             return { ...state, loading: true }
         })
         builder.addCase(loginThunk.fulfilled, (state, action) => {
-            if (action.payload?._id) {
+            if (action.payload.accessToken) {
                 socket.connect()
                 localStorage.setItem("chat-app", JSON.stringify(action.payload))
-                return { ...state, loggedInUser: action.payload, loading: false }
+                const user = jwtDecode(action.payload.accessToken)
+                console.log(user)
+                return { ...state, loggedInUser: user, loading: false }
             } else {
                 localStorage.removeItem("chat-app")
                 return { ...state, loggedInUser: {}, message: action.payload, loading: false }

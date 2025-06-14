@@ -42,17 +42,19 @@ const TextBox = () => {
         }
 
         // if it is a new conversation
-        if (!message.conversationID) {
-            const newConversation = {
-                participantsIDs: loggedInUser?._id + "###" + receiver?._id,
-                lastMessage: null
-            }
-            // newConversation = { ...newConversation, lastMessage: message }
-            dispatch(newConversationThunk({newConversation, message}))
-        } else {
-            console.log("hi")
-            dispatch(sendTextThunk(message))
-        }
+        // if (!message.conversationID) {
+        //     const newConversation = {
+        //         participantsIDs: loggedInUser?._id + "###" + receiver?._id,
+        //         lastMessage: null
+        //     }
+        //     // newConversation = { ...newConversation, lastMessage: message }
+        //     dispatch(newConversationThunk({newConversation, message}))
+        // } else {
+        //     console.log("hi")
+        //     dispatch(sendTextThunk(message))
+        // }
+
+        dispatch(sendTextThunk(message))
 
         socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
         e.target.text.value = ""
