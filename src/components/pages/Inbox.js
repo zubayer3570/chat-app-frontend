@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TextBox from '../main-components/TextBox';
@@ -6,9 +6,9 @@ import AllUsers from '../main-components/AllUsers';
 import { socket } from '../../socket';
 import AllConversations from '../main-components/AllConversations';
 import { getToken } from 'firebase/messaging';
-import axios from 'axios';
 import { messaging } from '../../firebase';
-import { loginThunk } from '../../features/userSlice';
+import { autoLogin } from '../../features/userSlice';
+import {api} from "../../api"
 
 
 const Inbox = () => {
@@ -16,15 +16,11 @@ const Inbox = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const { loggedInUser, receiver, loading } = useSelector(state => state.users)
+    const { loggedInUser, receiver, loading, authUserChecked } = useSelector(state => state.users)
 
     useEffect(() => {
         
-        dispatch(loginThunk())
-
-        // if (!location.state?.doNotVerifyUser) {
-        //     dispatch(loginThunk())
-        // }
+        dispatch(autoLogin())
 
         socket.on("connect", () => {
             if (loggedInUser?._id) {
@@ -49,7 +45,7 @@ const Inbox = () => {
         const permission = await Notification.requestPermission()
         if (permission === "granted") {
             const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
-            await axios.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
+            await api.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
         }
     }
     
@@ -58,10 +54,13 @@ const Inbox = () => {
     }, [])
 
     useEffect(() => {
-        if (!loggedInUser?._id && !loading) {
+        if (!loggedInUser?._id && authUserChecked) {
+            console.log(loggedInUser)
+            // console.log(loggedInUser)
+            // console.log(authUserChecked)
             navigate('/login')
         }
-    }, [loading, loggedInUser])
+    }, [authUserChecked])
 
 
     return (

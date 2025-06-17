@@ -26,10 +26,6 @@ const Login = () => {
             navigate("/")
         }
     }, [loggedInUser])
-
-    if (loading) {
-        return <Spinner />
-    }
     
 
     return (

@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { socket } from "../socket";
 import { updateLastMessage } from "./conversationsSlice";
+import {api} from "../api"
 
 export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, { getState, dispatch }) => {
-    const res = await axios.post("http://localhost:5000/send-text", message)
+    const res = await api.post("http://localhost:5000/send-text", message)
     const { loggedInUser, receiver } = getState().users
     const newMessage = { ...res.data.message, sender: loggedInUser, receiver: receiver }
     dispatch(updateLastMessage(newMessage))
@@ -16,7 +16,7 @@ export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, {
 })
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationID) => {
-    const res = await axios.post("http://localhost:5000/get-texts", { conversationID })
+    const res = await api.post("http://localhost:5000/get-texts", { conversationID })
     return res.data
 })
 

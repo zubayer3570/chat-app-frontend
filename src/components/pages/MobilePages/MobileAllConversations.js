@@ -4,9 +4,9 @@ import { socket } from '../../../socket';
 import { useDispatch, useSelector } from 'react-redux';
 import { allUsersThunk, loginThunk } from '../../../features/userSlice';
 import { getToken } from 'firebase/messaging';
-import axios from 'axios';
 import { messaging } from '../../../firebase';
 import { useNavigate } from 'react-router-dom';
+import {api} from "../../../api"
 
 const MobileAllConversations = () => {
     const { loggedInUser } = useSelector(state => state.users)
@@ -29,7 +29,7 @@ const MobileAllConversations = () => {
         const permission = await Notification.requestPermission()
         if (permission === "granted") {
             const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
-            await axios.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
+            await api.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
         }
 
     }

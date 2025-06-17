@@ -50,7 +50,7 @@ const TextBox = () => {
         //     // newConversation = { ...newConversation, lastMessage: message }
         //     dispatch(newConversationThunk({newConversation, message}))
         // } else {
-        //     console.log("hi")
+        //     // console.log("hi")
         //     dispatch(sendTextThunk(message))
         // }
 

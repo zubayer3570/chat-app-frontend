@@ -12,8 +12,8 @@ const ConversationCard = ({ conversation }) => {
     const { loggedInUser, allUsers } = useSelector(state => state.users)
     const targetUserId = conversation?.participantsIDs?.split("###").filter(id => id !== loggedInUser._id)[0]
     const receiver = allUsers.filter((user)=> user._id === targetUserId)[0]
-    console.log("this is receiver: ", receiver)
-    console.log(conversation)
+    // console.log("this is receiver: ", receiver)
+    // console.log(conversation)
 
     const handleCick = () => {
         dispatch(selectReceiver(receiver))

@@ -15,6 +15,7 @@ const AllUsers = () => {
     useEffect(() => { dispatch(allUsersThunk()) }, [])
     const handleLogout = () => {
         dispatch(logoutUser())
+        navigate("/login")
     }
 
     useEffect(() => {
@@ -23,7 +24,7 @@ const AllUsers = () => {
             dispatch(updateActiveStatus(data))
         })
         socket.on("new_user", (data) => {
-            console.log("heheheheh")
+            // console.log("heheheheh")
             dispatch(addNewUser(data))
         })
 

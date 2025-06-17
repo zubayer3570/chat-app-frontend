@@ -3,7 +3,7 @@ import Inbox from './components/pages/Inbox';
 import Login from './components/pages/Login';
 import Signup from './components/pages/Signup';
 import { useEffect } from 'react';
-import { loginThunk } from './features/userSlice';
+import { autoLogin, loginThunk } from './features/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import MobileAllConversations from './components/pages/MobilePages/MobileAllConversations';
 import MobileAllUsers from './components/pages/MobilePages/MobileAllUsers';
@@ -16,9 +16,7 @@ function App() {
 
 
   useEffect(() => {
-    if (loggedInUser?._id) {
-      dispatch(loginThunk(loggedInUser))
-    }
+    dispatch(autoLogin())
   }, [])
 
   return (
@@ -27,9 +25,9 @@ function App() {
         <Route element={<Inbox />} path='/'></Route>
         <Route element={<Signup />} path='/signup'></Route>
         <Route element={<Login />} path='/login'></Route>
-        <Route element={<MobileAllConversations />} path='/mobile/conversations'></Route>
+        {/* <Route element={<MobileAllConversations />} path='/mobile/conversations'></Route>
         <Route element={<MobileAllUsers />} path='/mobile/all-users'></Route>
-        <Route element={<MobileTextbox />} path='/mobile/textbox'></Route>
+        <Route element={<MobileTextbox />} path='/mobile/textbox'></Route> */}
       </Routes>
     </>
   );

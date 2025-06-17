@@ -1,12 +1,12 @@
-import axios from "axios";
 import { socket } from "../socket";
-import { addText, sendTextThunk } from "./textSlice";
+import { addText } from "./textSlice";
+import {api} from "../api"
 
 const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
 export const newConversationThunk = createAsyncThunk("newConversationThunk", async ({ newConversation, message }, { dispatch }) => {
     try {
-        const res = await axios.post("http://localhost:5000/add-conversation", { newConversation, message })
+        const res = await api.post("http://localhost:5000/add-conversation", { newConversation, message })
 
         dispatch(addText(res.data.newConversation.lastMessage))
 
@@ -16,14 +16,14 @@ export const newConversationThunk = createAsyncThunk("newConversationThunk", asy
 
     } catch (err) {
 
-        console.log(err)
+        // console.log(err)
 
     }
 })
 
 
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (lastMessage) => {
-    const { data } = await axios.post("http://localhost:5000/update-unread", { lastMessage })
+    const { data } = await api.post("http://localhost:5000/update-unread", { lastMessage })
     return data.updatedMessage;
 })
 

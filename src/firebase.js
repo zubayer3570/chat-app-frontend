@@ -1,5 +1,4 @@
 // Import the functions you need from the SDKs you need
-import axios from "axios";
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken } from "firebase/messaging";
 // TODO: Add SDKs for Firebase products that you want to use
