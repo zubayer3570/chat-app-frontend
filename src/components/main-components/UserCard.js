@@ -9,19 +9,21 @@ const UserCard = ({ user }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
-    const { allConversations } = useSelector(state => state.conversations)
+    const { conversations } = useSelector(state => state.conversations)
+
     const handleClick = () => {
         dispatch(selectReceiver(user))
         dispatch(clearAllTexts())
         dispatch(selectConversation({}))
 
-        for (let i = 0; i < allConversations.length; i++) {
-            for (let j = 0; j < user.conversationIDs.length; j++) {
-                if (allConversations[i]?._id === user.conversationIDs[j]) {
-                    dispatch(getTextsThunk(allConversations[i]?._id))
-                    dispatch(selectConversation(allConversations[i]))
-                    break;
-                }
+        for (let i = 0; i < conversations?.length; i++) {
+            const conversation = conversations[i]
+            console.log(conversation)
+            if (user._id === (conversation.userId_1._id === loggedInUser._id ? conversations[i].userId_2._id: conversations[i].userId_1._id)) {
+                console.log("found")
+                dispatch(getTextsThunk(conversation._id))
+                dispatch(selectConversation(conversation))
+                break
             }
         }
 
@@ -29,6 +31,7 @@ const UserCard = ({ user }) => {
             navigate("/mobile/textbox")
         }
     }
+
     return (
         <div onClick={handleClick} className='flex items-center justify-between px-8 lg:px-4 py-2 lg:w-[250px] rounded-md m-4 lg:m-2 cursor-pointer bg-test-3 shadow-1 text-white' key={user?._id} >
             <div className='flex items-center'>

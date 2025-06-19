@@ -19,7 +19,7 @@ const TextBox = () => {
     const dispatch = useDispatch()
 
     const userTypingHandler = (e) => {
-        if (e.target.value.length > 0) {
+        if (e.target.value?.length > 0) {
             if (!userTyping) {
                 socket.emit("typing", { typingUser: loggedInUser, receiver })
                 userTyping = true
@@ -38,11 +38,11 @@ const TextBox = () => {
             receiver: receiver?._id,
             text: e.target.text.value,
             unread: true,
-            conversationID: selectedConversation?._id
+            conversationId: selectedConversation?._id
         }
 
         // if it is a new conversation
-        // if (!message.conversationID) {
+        // if (!message.conversationId) {
         //     const newConversation = {
         //         participantsIDs: loggedInUser?._id + "###" + receiver?._id,
         //         lastMessage: null
@@ -54,7 +54,7 @@ const TextBox = () => {
         //     dispatch(sendTextThunk(message))
         // }
 
-        dispatch(sendTextThunk(message))
+        dispatch(sendTextThunk({message}))
 
         socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
         e.target.text.value = ""
@@ -62,7 +62,7 @@ const TextBox = () => {
 
     useEffect(() => {
         socket.on("new_message", (data) => {
-            if (selectedConversation?._id === data.conversationID && data?.receiver?._id === loggedInUser?._id) {
+            if (selectedConversation?._id === data.conversationId && data?.receiver?._id === loggedInUser?._id) {
                 dispatch(addText(data))
             }
         })

@@ -21,6 +21,18 @@ export const newConversationThunk = createAsyncThunk("newConversationThunk", asy
     }
 })
 
+export const getConversationsThunk = createAsyncThunk("getConversationsThunk", async ({ userId } ) => {
+    try {
+        const res = await api.post("http://localhost:5000/get-conversations", { userId })
+        return res.data
+
+    } catch (err) {
+
+        console.log(err)
+
+    }
+})
+
 
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (lastMessage) => {
     const { data } = await api.post("http://localhost:5000/update-unread", { lastMessage })
@@ -32,7 +44,7 @@ const conversationsSlice = createSlice({
     name: "conversationsSlice",
     initialState: {
         selectedConversation: {},
-        allConversations: [],
+        conversations: [],
         loading: false
     },
     reducers: {
@@ -46,8 +58,8 @@ const conversationsSlice = createSlice({
             return { ...state, allConversations: [action.payload, ...state.allConversations] }
         },
         updateLastMessage: (state, action) => {
-            const tempConversation = state.allConversations.filter(conversation => conversation?._id !== action.payload.conversationID)
-            let targetConversation = state.allConversations.find(conversation => conversation?._id === action.payload.conversationID)
+            const tempConversation = state.allConversations.filter(conversation => conversation?._id !== action.payload.conversationId)
+            let targetConversation = state.allConversations.find(conversation => conversation?._id === action.payload.conversationId)
             targetConversation = { ...targetConversation, lastMessage: action.payload }
             return { ...state, allConversations: [targetConversation, ...tempConversation] }
         },
@@ -58,13 +70,16 @@ const conversationsSlice = createSlice({
             return { ...state, selectedConversation: action.payload, allConversations: [action.payload, ...state.allConversations] }
         })
 
+        builder.addCase(getConversationsThunk.fulfilled, (state, action) => {
+            return {...state, conversations: action.payload?.conversations}
+        })
 
         builder.addCase(updateUnreadThunk.pending, (state) => {
             return { ...state, loading: true }
         })
         builder.addCase(updateUnreadThunk.fulfilled, (state, action) => {
             const newConversation = state.allConversations.map(conversation => {
-                if (conversation?._id === action.payload?.conversationID) {
+                if (conversation?._id === action.payload?.conversationId) {
                     return {...conversation, lastMessage: {...action.payload}}
                 }
                 return conversation

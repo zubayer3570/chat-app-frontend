@@ -5,13 +5,13 @@ import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../../socket';
 import { logoutUser } from '../../features/userSlice';
-import { addNewConversation, updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
+import { addNewConversation, getConversationsThunk, updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
 
 const AllConversations = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
-    const { allConversations, selectedConversation } = useSelector(state => state.conversations)
+    const { conversations, selectedConversation } = useSelector(state => state.conversations)
 
     useEffect(() => {
         socket.on("new_conversation", (newConversation) => {
@@ -23,14 +23,18 @@ const AllConversations = () => {
 
     useEffect(() => {
         socket.on("new_last_message", (data) => {
-            if (selectedConversation?._id === data.conversationID) {
+            if (selectedConversation?._id === data.conversationId) {
                 data.unread = false
-                dispatch(updateUnreadThunk(data.conversationID))
+                dispatch(updateUnreadThunk(data.conversationId))
             }
             dispatch(updateLastMessage(data))
         })
         return () => socket.removeListener("new_last_message")
     }, [])
+
+    useEffect(()=> {
+        dispatch(getConversationsThunk({userId: loggedInUser._id}))
+    }, [loggedInUser])
 
     return (
         <div className={'overflow-auto ' + style.hideScrollbar}>
@@ -65,7 +69,7 @@ const AllConversations = () => {
             <div>
                 <div className='w-[280px] h-[1px] mx-2'></div>
                 {
-                    allConversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation?._id} />)
+                    conversations?.map(conversation => <ConversationCard conversation={conversation} key={conversation?._id} />)
                 }
             </div>
         </div>

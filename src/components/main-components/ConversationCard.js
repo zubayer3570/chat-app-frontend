@@ -9,9 +9,9 @@ import { updateUnreadThunk } from '../../features/conversationsSlice';
 const ConversationCard = ({ conversation }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { loggedInUser, allUsers } = useSelector(state => state.users)
-    const targetUserId = conversation?.participantsIDs?.split("###").filter(id => id !== loggedInUser._id)[0]
-    const receiver = allUsers.filter((user)=> user._id === targetUserId)[0]
+    const { loggedInUser } = useSelector(state => state.users)
+    const receiver = conversation.userId_1._id === loggedInUser._id ? conversation.userId_2 : conversation.userId_1
+
     // console.log("this is receiver: ", receiver)
     // console.log(conversation)
 

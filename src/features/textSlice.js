@@ -15,8 +15,8 @@ export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, {
     return { ...res.data.message, sender: loggedInUser, receiver: receiver }
 })
 
-export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationID) => {
-    const res = await api.post("http://localhost:5000/get-texts", { conversationID })
+export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationId) => {
+    const res = await api.post("http://localhost:5000/get-texts", { conversationId })
     return res.data
 })
 

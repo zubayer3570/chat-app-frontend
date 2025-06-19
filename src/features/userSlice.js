@@ -42,9 +42,9 @@ const userSlice = createSlice({
         updateActiveStatus: (state, action) => {
             const temp = [...state.allUsers];
             let activeUserEmail = [...action.payload]
-            for (let i = 0; i < temp.length; i++) {
+            for (let i = 0; i < temp?.length; i++) {
                 temp[i] = { ...temp[i], active: false }
-                for (let j = 0; j < activeUserEmail.length; j++) {
+                for (let j = 0; j < activeUserEmail?.length; j++) {
                     if (activeUserEmail[j] === temp[i].email) {
                         temp[i] = { ...temp[i], active: true }
                         activeUserEmail.splice(j, 1)
