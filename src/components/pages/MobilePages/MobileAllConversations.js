@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import AllConversations from '../../main-components/AllConversations';
-import { socket } from '../../../socket';
+import { getSocket } from '../../../socket';
 import { useDispatch, useSelector } from 'react-redux';
 import { allUsersThunk, loginThunk } from '../../../features/userSlice';
 import { getToken } from 'firebase/messaging';
@@ -16,9 +16,9 @@ const MobileAllConversations = () => {
     useEffect(() => { dispatch(allUsersThunk()) }, [])
     useEffect(() => {
         dispatch(loginThunk())
-        socket.on("connect", () => {
+        getSocket() && getSocket().on("connect", () => {
             if (loggedInUser?._id) {
-                socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
+                getSocket() && getSocket().emit("new_active_user", { userEmail: loggedInUser.email, socketID: getSocket().id })
             }
         })
     }, [])

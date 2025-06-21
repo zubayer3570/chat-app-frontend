@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConversationCard from './ConversationCard';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
-import { socket } from '../../socket';
+import { getSocket } from '../../socket';
 import { logoutUser } from '../../features/userSlice';
 import { addNewConversation, getConversationsThunk, updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
 
@@ -14,22 +14,22 @@ const AllConversations = () => {
     const { conversations, selectedConversation } = useSelector(state => state.conversations)
 
     useEffect(() => {
-        socket.on("new_conversation", (newConversation) => {
+        getSocket() && getSocket() && getSocket().on("new_conversation", (newConversation) => {
             // console.log("new conv", newConversation)
             dispatch(addNewConversation(newConversation))
         })
-        return () => socket.off("new_conversation")
+        return () => getSocket() && getSocket().off("new_conversation")
     }, [])
 
     useEffect(() => {
-        socket.on("new_last_message", (data) => {
+        getSocket() && getSocket().on("new_last_message", (data) => {
             if (selectedConversation?._id === data.conversationId) {
                 data.unread = false
                 dispatch(updateUnreadThunk(data.conversationId))
             }
             dispatch(updateLastMessage(data))
         })
-        return () => socket.removeListener("new_last_message")
+        return () => getSocket() && getSocket().removeListener("new_last_message")
     }, [])
 
     useEffect(()=> {

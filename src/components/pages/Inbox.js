@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TextBox from '../main-components/TextBox';
 import AllUsers from '../main-components/AllUsers';
-import { socket } from '../../socket';
+import { getSocket } from '../../socket';
 import AllConversations from '../main-components/AllConversations';
 import { getToken } from 'firebase/messaging';
 import { messaging } from '../../firebase';
@@ -22,13 +22,13 @@ const Inbox = () => {
         
         dispatch(autoLogin())
 
-        socket.on("connect", () => {
+        getSocket() && getSocket().on("connect", () => {
             if (loggedInUser?._id) {
-                socket.emit("new_active_user", { userEmail: loggedInUser.email, socketID: socket.id })
+                getSocket() && getSocket().emit("new_active_user", { userEmail: loggedInUser.email, socketID: getSocket().id })
             }
         })
-        socket.on("disconnect", () => {
-            socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
+        getSocket() && getSocket().on("disconnect", () => {
+            getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
         })
 
     }, [])
@@ -56,8 +56,6 @@ const Inbox = () => {
     useEffect(() => {
         if (!loggedInUser?._id && authUserChecked) {
             console.log(loggedInUser)
-            // console.log(loggedInUser)
-            // console.log(authUserChecked)
             navigate('/login')
         }
     }, [authUserChecked])

@@ -1,4 +1,4 @@
-import { socket } from "../socket";
+import { getSocket } from "../socket";
 import { addText } from "./textSlice";
 import {api} from "../api"
 
@@ -10,7 +10,7 @@ export const newConversationThunk = createAsyncThunk("newConversationThunk", asy
 
         dispatch(addText(res.data.newConversation.lastMessage))
 
-        socket.emit("new_conversation", res.data.newConversation)
+        getSocket() && getSocket().emit("new_conversation", res.data.newConversation)
 
         return res.data.newConversation
 

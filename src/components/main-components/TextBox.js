@@ -4,7 +4,7 @@ import { sendTextThunk, addText, receiverTyping, receiverStoppedTyping } from '.
 import Text from './Text';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
-import { socket } from '../../socket';
+import { getSocket } from '../../socket';
 import Spinner from './Spinner';
 import Typing from './Typing/Typing';
 import { newConversationThunk } from '../../features/conversationsSlice';
@@ -21,11 +21,11 @@ const TextBox = () => {
     const userTypingHandler = (e) => {
         if (e.target.value?.length > 0) {
             if (!userTyping) {
-                socket.emit("typing", { typingUser: loggedInUser, receiver })
+                getSocket() && getSocket().emit("typing", { typingUser: loggedInUser, receiver })
                 userTyping = true
             }
         } else {
-            socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
+            getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
             userTyping = false
         }
     }
@@ -34,39 +34,26 @@ const TextBox = () => {
         e.preventDefault()
 
         const message = {
-            sender: loggedInUser?._id,
-            receiver: receiver?._id,
+            sender: loggedInUser,
+            receiver: receiver,
             text: e.target.text.value,
             unread: true,
             conversationId: selectedConversation?._id
         }
 
-        // if it is a new conversation
-        // if (!message.conversationId) {
-        //     const newConversation = {
-        //         participantsIDs: loggedInUser?._id + "###" + receiver?._id,
-        //         lastMessage: null
-        //     }
-        //     // newConversation = { ...newConversation, lastMessage: message }
-        //     dispatch(newConversationThunk({newConversation, message}))
-        // } else {
-        //     // console.log("hi")
-        //     dispatch(sendTextThunk(message))
-        // }
-
         dispatch(sendTextThunk({message}))
 
-        socket.emit("typingStopped", { typingUser: loggedInUser, receiver })
+        getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
         e.target.text.value = ""
     }
 
     useEffect(() => {
-        socket.on("new_message", (data) => {
+        getSocket() && getSocket().on("new_message", (data) => {
             if (selectedConversation?._id === data.conversationId && data?.receiver?._id === loggedInUser?._id) {
                 dispatch(addText(data))
             }
         })
-        return () => socket.removeListener("new_message")
+        return () => getSocket() && getSocket().removeListener("new_message")
     }, [selectedConversation])
 
     useEffect(() => {
@@ -74,19 +61,19 @@ const TextBox = () => {
     }, [texts])
 
     useEffect(() => {
-        socket.on("typing", (data) => {
+        getSocket() && getSocket().on("typing", (data) => {
             if (receiver.email === data.typingUser.email) {
                 dispatch(receiverTyping(data.typingUser))
             }
         })
-        socket.on("typingStopped", (data) => {
+        getSocket() && getSocket().on("typingStopped", (data) => {
             if (receiver.email === data.typingUser.email) {
                 dispatch(receiverStoppedTyping())
             }
         })
         return () => {
-            socket.off("typing")
-            socket.off("typingStopped")
+            getSocket() && getSocket().off("typing")
+            getSocket() && getSocket().off("typingStopped")
         }
     }, [receiver])
 

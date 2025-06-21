@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { socket } from '../socket'
+import { connectSocket, getSocket } from '../socket'
 import { setAllConversations } from './conversationsSlice'
 import {jwtDecode} from "jwt-decode"
 import {api} from "../api"
@@ -67,24 +67,24 @@ const userSlice = createSlice({
                 } else {
                     // // console.log("hi")
                     localStorage.removeItem("chat-app")
-                    socket.removeAllListeners()
-                    socket.disconnect()
+                    getSocket().removeAllListeners()
+                    getSocket().disconnect()
                     return { ...state, loggedInUser: {}, allUsers: [], receiver: {}, authUserChecked: true }
                 }
             } catch (err) {
                 // console.log(err)
                 // // console.log("hi")
                 localStorage.removeItem("chat-app")
-                socket.removeAllListeners()
-                socket.disconnect()
+                getSocket().removeAllListeners()
+                getSocket().disconnect()
                 return { ...state, loggedInUser: {}, allUsers: [], receiver: {}, authUserChecked: true }
             }
         },
         logoutUser: (state) => {
             // console.log("hi")
             localStorage.removeItem("chat-app")
-            socket.removeAllListeners()
-            socket.disconnect()
+            getSocket().removeAllListeners()
+            getSocket().disconnect()
             return { ...state, loggedInUser: {}, allUsers: [], receiver: {} }
         }
     },
@@ -110,9 +110,12 @@ const userSlice = createSlice({
         })
         builder.addCase(loginThunk.fulfilled, (state, action) => {
             if (action.payload.accessToken) {
-                socket.connect()
                 localStorage.setItem("chat-app", JSON.stringify(action.payload))
                 const user = jwtDecode(action.payload.accessToken).user
+
+                // socket connection
+                connectSocket(user.email)
+
                 console.log(user)
                 return { ...state, loggedInUser: user, loading: false }
             } else {
@@ -129,7 +132,7 @@ const userSlice = createSlice({
             return { ...state, loading: true }
         })
         builder.addCase(allUsersThunk.fulfilled, (state, action) => {
-            return { ...state, allUsers: action.payload, loading: false }
+            return { ...state, allUsers: action.payload.allUsers, loading: false }
         })
         builder.addCase(allUsersThunk.rejected, (state, action) => {
             return { ...state, allUsers: [], loading: false }

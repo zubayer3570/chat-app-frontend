@@ -4,13 +4,15 @@ import { addNewUser, allUsersThunk, logoutUser, updateActiveStatus } from '../..
 import UserCard from './UserCard';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
-import { socket } from '../../socket';
+import { getSocket } from '../../socket';
 import Typing from './Typing/Typing';
 
 const AllUsers = () => {
     const { loggedInUser, allUsers } = useSelector(state => state.users)
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+    console.log(allUsers)
 
     useEffect(() => { dispatch(allUsersThunk()) }, [])
     const handleLogout = () => {
@@ -20,17 +22,17 @@ const AllUsers = () => {
 
     useEffect(() => {
 
-        socket.on("active_status_updated", (data) => {
+        getSocket() && getSocket().on("active_status_updated", (data) => {
             dispatch(updateActiveStatus(data))
         })
-        socket.on("new_user", (data) => {
+        getSocket() && getSocket().on("new_user", (data) => {
             // console.log("heheheheh")
             dispatch(addNewUser(data))
         })
 
         return () => {
-            socket.off("new_user")
-            socket.off("active_status_updated")
+            getSocket() && getSocket().off("new_user")
+            getSocket() && getSocket().off("active_status_updated")
         }
 
     }, [])

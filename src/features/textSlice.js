@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { socket } from "../socket";
+import { getSocket } from "../socket";
 import { updateLastMessage } from "./conversationsSlice";
 import {api} from "../api"
 
@@ -9,8 +9,8 @@ export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, {
     const newMessage = { ...res.data.message, sender: loggedInUser, receiver: receiver }
     dispatch(updateLastMessage(newMessage))
 
-    socket.emit("new_message", newMessage)
-    socket.emit("new_last_message", newMessage)
+    getSocket() && getSocket().emit("new_message", newMessage)
+    getSocket() && getSocket().emit("new_last_message", newMessage)
 
     return { ...res.data.message, sender: loggedInUser, receiver: receiver }
 })
