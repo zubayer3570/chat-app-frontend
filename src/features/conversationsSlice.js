@@ -1,6 +1,6 @@
 import { getSocket } from "../socket";
 import { addText } from "./textSlice";
-import {api} from "../api"
+import { api } from "../api"
 
 const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
@@ -15,13 +15,11 @@ export const newConversationThunk = createAsyncThunk("newConversationThunk", asy
         return res.data.newConversation
 
     } catch (err) {
-
-        // console.log(err)
-
+        console.log(err)
     }
 })
 
-export const getConversationsThunk = createAsyncThunk("getConversationsThunk", async ({ userId } ) => {
+export const getConversationsThunk = createAsyncThunk("getConversationsThunk", async ({ userId }) => {
     try {
         const res = await api.post("http://localhost:5000/get-conversations", { userId })
         return res.data
@@ -58,10 +56,21 @@ const conversationsSlice = createSlice({
             return { ...state, allConversations: [action.payload, ...state.allConversations] }
         },
         updateLastMessage: (state, action) => {
-            const tempConversation = state.allConversations.filter(conversation => conversation?._id !== action.payload.conversationId)
-            let targetConversation = state.allConversations.find(conversation => conversation?._id === action.payload.conversationId)
-            targetConversation = { ...targetConversation, lastMessage: action.payload }
-            return { ...state, allConversations: [targetConversation, ...tempConversation] }
+            let targetIndex = null
+            console.log("payload", action.payload)
+            const tempConversation = state.conversations.filter((conversation, index) => {
+                console.log(index)
+                if (conversation?._id !== action.payload.conversationId) {
+                    return conversation
+                } else {
+                    targetIndex = index
+                    return 
+                }
+            })
+            console.log("tempConversation", tempConversation)
+            const targetConversation = state.conversations[targetIndex]
+            console.log("convos: ", { ...state, conversations: [{...targetConversation, lastMessage: action.payload }, ...tempConversation] })
+            return { ...state, conversations: [{...targetConversation, lastMessage: action.payload }, ...tempConversation] }
         },
     },
     extraReducers: (builder) => {
@@ -71,7 +80,8 @@ const conversationsSlice = createSlice({
         })
 
         builder.addCase(getConversationsThunk.fulfilled, (state, action) => {
-            return {...state, conversations: action.payload?.conversations}
+            console.log(action.payload)
+            return { ...state, conversations: action.payload?.conversations }
         })
 
         builder.addCase(updateUnreadThunk.pending, (state) => {
@@ -80,7 +90,7 @@ const conversationsSlice = createSlice({
         builder.addCase(updateUnreadThunk.fulfilled, (state, action) => {
             const newConversation = state.allConversations.map(conversation => {
                 if (conversation?._id === action.payload?.conversationId) {
-                    return {...conversation, lastMessage: {...action.payload}}
+                    return { ...conversation, lastMessage: { ...action.payload } }
                 }
                 return conversation
             })

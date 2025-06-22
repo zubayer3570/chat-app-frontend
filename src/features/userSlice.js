@@ -61,30 +61,29 @@ const userSlice = createSlice({
             try {
                 const user = jwtDecode(JSON.parse(localStorage.getItem("chat-app")).accessToken).user
                 if (user) {
-                    const x = {...state, loggedInUser: user, authUserChecked: true}
-                    // console.log(x)
-                    return x
+                    connectSocket(user.email)
+                    return {...state, loggedInUser: user, authUserChecked: true}
                 } else {
                     // // console.log("hi")
                     localStorage.removeItem("chat-app")
-                    getSocket().removeAllListeners()
-                    getSocket().disconnect()
+                    getSocket() && getSocket().removeAllListeners()
+                    getSocket() && getSocket().disconnect()
                     return { ...state, loggedInUser: {}, allUsers: [], receiver: {}, authUserChecked: true }
                 }
             } catch (err) {
                 // console.log(err)
                 // // console.log("hi")
                 localStorage.removeItem("chat-app")
-                getSocket().removeAllListeners()
-                getSocket().disconnect()
+                getSocket() && getSocket().removeAllListeners()
+                getSocket() && getSocket().disconnect()
                 return { ...state, loggedInUser: {}, allUsers: [], receiver: {}, authUserChecked: true }
             }
         },
         logoutUser: (state) => {
             // console.log("hi")
             localStorage.removeItem("chat-app")
-            getSocket().removeAllListeners()
-            getSocket().disconnect()
+            getSocket() && getSocket().removeAllListeners()
+            getSocket() && getSocket().disconnect()
             return { ...state, loggedInUser: {}, allUsers: [], receiver: {} }
         }
     },

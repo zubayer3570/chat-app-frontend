@@ -12,7 +12,7 @@ const AllUsers = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    console.log(allUsers)
+    // console.log(allUsers)
 
     useEffect(() => { dispatch(allUsersThunk()) }, [])
     const handleLogout = () => {

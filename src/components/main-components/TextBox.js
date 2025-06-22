@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../socket';
 import Spinner from './Spinner';
 import Typing from './Typing/Typing';
-import { newConversationThunk } from '../../features/conversationsSlice';
+import { newConversationThunk, updateLastMessage } from '../../features/conversationsSlice';
 
 
 const TextBox = () => {
@@ -41,6 +41,8 @@ const TextBox = () => {
             conversationId: selectedConversation?._id
         }
 
+        getSocket().emit("new_message", {message})
+
         dispatch(sendTextThunk({message}))
 
         getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
@@ -49,12 +51,14 @@ const TextBox = () => {
 
     useEffect(() => {
         getSocket() && getSocket().on("new_message", (data) => {
-            if (selectedConversation?._id === data.conversationId && data?.receiver?._id === loggedInUser?._id) {
-                dispatch(addText(data))
+            if (selectedConversation?._id === data.message.conversationId) {
+                // console.log("matched", data.message)
+                dispatch(addText(data.message))
+                dispatch(updateLastMessage(data.message))
             }
         })
         return () => getSocket() && getSocket().removeListener("new_message")
-    }, [selectedConversation])
+    }, [loggedInUser, selectedConversation])
 
     useEffect(() => {
         document.getElementById("tool")?.scrollIntoView()

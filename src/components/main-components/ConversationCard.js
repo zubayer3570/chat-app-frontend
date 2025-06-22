@@ -38,7 +38,7 @@ const ConversationCard = ({ conversation }) => {
                     </div>
                     <div>
                         <p className='font-bold'>{receiver?.name?.split(" ")[0]}</p>
-                        <p className=''> <span>{conversation?.lastMessage?.sender?._id === loggedInUser?._id ? "You: " : ""}</span>  {conversation?.lastMessage?.text?.slice(0, 20)}</p>
+                        <p className=''> <span>{conversation?.lastMessage?.sender === loggedInUser?._id ? "You: " : ""}</span>  {conversation?.lastMessage?.text?.slice(0, 20)}</p>
                     </div>
                 </div>
                 {

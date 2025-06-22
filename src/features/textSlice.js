@@ -1,18 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getSocket } from "../socket";
 import { updateLastMessage } from "./conversationsSlice";
-import {api} from "../api"
+import { api } from "../api"
 
 export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, { getState, dispatch }) => {
-    const res = await api.post("http://localhost:5000/send-text", message)
-    const { loggedInUser, receiver } = getState().users
-    const newMessage = { ...res.data.message, sender: loggedInUser, receiver: receiver }
-    dispatch(updateLastMessage(newMessage))
+    try {
+        const res = await api.post("http://localhost:5000/send-text", message)
+        console.log(getSocket().id)
 
-    getSocket() && getSocket().emit("new_message", newMessage)
-    getSocket() && getSocket().emit("new_last_message", newMessage)
-
-    return { ...res.data.message, sender: loggedInUser, receiver: receiver }
+        return res.data
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationId) => {
@@ -50,7 +49,10 @@ const textSlice = createSlice({
         })
 
         builder.addCase(sendTextThunk.fulfilled, (state, action) => {
-            return { ...state, texts: [...state.texts, action.payload] }
+            // console.log(action.payload)
+            // return { ...state, texts: [...state.texts, state.texts[0]] }
+            // return { ...state, texts: [...state.texts, action.payload.message] }
+            return state
         })
     }
 })

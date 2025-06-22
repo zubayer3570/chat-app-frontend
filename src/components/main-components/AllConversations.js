@@ -21,16 +21,16 @@ const AllConversations = () => {
         return () => getSocket() && getSocket().off("new_conversation")
     }, [])
 
-    useEffect(() => {
-        getSocket() && getSocket().on("new_last_message", (data) => {
-            if (selectedConversation?._id === data.conversationId) {
-                data.unread = false
-                dispatch(updateUnreadThunk(data.conversationId))
-            }
-            dispatch(updateLastMessage(data))
-        })
-        return () => getSocket() && getSocket().removeListener("new_last_message")
-    }, [])
+    // useEffect(() => {
+    //     getSocket() && getSocket().on("new_last_message", (data) => {
+    //         if (selectedConversation?._id === data.conversationId) {
+    //             data.unread = false
+    //             dispatch(updateUnreadThunk(data.conversationId))
+    //         }
+    //         dispatch(updateLastMessage(data))
+    //     })
+    //     return () => getSocket() && getSocket().removeListener("new_last_message")
+    // }, [])
 
     useEffect(()=> {
         dispatch(getConversationsThunk({userId: loggedInUser._id}))

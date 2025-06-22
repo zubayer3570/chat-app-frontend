@@ -9,6 +9,8 @@ export const connectSocket = (email) => {
             email
         }
     })
+    
+    socket.connect()
 }
 
 export const getSocket = () => {
