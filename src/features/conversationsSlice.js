@@ -57,9 +57,9 @@ const conversationsSlice = createSlice({
         },
         updateLastMessage: (state, action) => {
             let targetIndex = null
-            console.log("payload", action.payload)
+            // console.log("payload", action.payload)
             const tempConversation = state.conversations.filter((conversation, index) => {
-                console.log(index)
+                // console.log(index)
                 if (conversation?._id !== action.payload.conversationId) {
                     return conversation
                 } else {
@@ -67,9 +67,9 @@ const conversationsSlice = createSlice({
                     return 
                 }
             })
-            console.log("tempConversation", tempConversation)
+            // console.log("tempConversation", tempConversation)
             const targetConversation = state.conversations[targetIndex]
-            console.log("convos: ", { ...state, conversations: [{...targetConversation, lastMessage: action.payload }, ...tempConversation] })
+            // console.log("convos: ", { ...state, conversations: [{...targetConversation, lastMessage: action.payload }, ...tempConversation] })
             return { ...state, conversations: [{...targetConversation, lastMessage: action.payload }, ...tempConversation] }
         },
     },
@@ -88,7 +88,7 @@ const conversationsSlice = createSlice({
             return { ...state, loading: true }
         })
         builder.addCase(updateUnreadThunk.fulfilled, (state, action) => {
-            const newConversation = state.allConversations.map(conversation => {
+            const newConversation = state.conversations.map(conversation => {
                 if (conversation?._id === action.payload?.conversationId) {
                     return { ...conversation, lastMessage: { ...action.payload } }
                 }

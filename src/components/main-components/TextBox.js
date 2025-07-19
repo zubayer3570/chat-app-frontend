@@ -51,10 +51,10 @@ const TextBox = () => {
 
     useEffect(() => {
         getSocket() && getSocket().on("new_message", (data) => {
+            dispatch(updateLastMessage(data.message))
             if (selectedConversation?._id === data.message.conversationId) {
                 // console.log("matched", data.message)
                 dispatch(addText(data.message))
-                dispatch(updateLastMessage(data.message))
             }
         })
         return () => getSocket() && getSocket().removeListener("new_message")
