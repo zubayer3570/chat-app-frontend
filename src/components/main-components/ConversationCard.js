@@ -10,10 +10,8 @@ const ConversationCard = ({ conversation }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
-    const receiver = conversation.userId_1._id === loggedInUser._id ? conversation.userId_2 : conversation.userId_1
+    const receiver = conversation?.userId_1?._id === loggedInUser?._id ? conversation?.userId_2 : conversation?.userId_1
 
-    // console.log("this is receiver: ", receiver)
-    // console.log(conversation)
 
     const handleCick = () => {
         dispatch(selectReceiver(receiver))

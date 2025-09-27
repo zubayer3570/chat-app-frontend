@@ -32,6 +32,7 @@ const Signup = () => {
     }
 
     useEffect(() => {
+        console.log(loggedInUser)
         if (loggedInUser?._id) {
             navigate("/", {state: {doNotVerifyUser: true}})
         }

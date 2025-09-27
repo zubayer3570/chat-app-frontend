@@ -8,6 +8,7 @@ import {api} from "../api"
 export const signupThunk = createAsyncThunk("signupThunk", async (formData, { dispatch }) => {
     const res = await api.post("http://localhost:5000/signup", formData)
     dispatch(setAllConversations([]))
+    console.log("slice", res)
     return res.data
 })
 
@@ -30,10 +31,10 @@ const userSlice = createSlice({
     initialState: {
         loggedInUser: {},
         receiver: {},
-        loading: true,
         allUsers: [],
         errMessage: "",
-        authUserChecked: false
+        authUserChecked: false,
+        loading: true,
     },
     reducers: {
         selectReceiver: (state, action) => {
@@ -95,9 +96,17 @@ const userSlice = createSlice({
         builder.addCase(signupThunk.fulfilled, (state, action) => {
             if (action.payload.accessToken){
                 localStorage.setItem("chat-app", JSON.stringify(action.payload))
+
+                const user = jwtDecode(action.payload.accessToken).user
+                // creating socket connection with server
+                connectSocket(user.email)
+
+                return { ...state, loggedInUser: user, loading: false, message: {} }
+            } else {
+                return { ...state, loggedInUser: {}, loading: false, message: {} }
             }
-            const user = jwtDecode(action.payload.accessToken).user
-            return { ...state, loggedInUser: user, loading: false, message: {} }
+
+            
         })
         builder.addCase(signupThunk.rejected, (state, action) => {
             // console.log("Signup error Payload: ", action.payload)
@@ -112,10 +121,9 @@ const userSlice = createSlice({
                 localStorage.setItem("chat-app", JSON.stringify(action.payload))
                 const user = jwtDecode(action.payload.accessToken).user
 
-                // socket connection
+                // creating socket connection with server
                 connectSocket(user.email)
 
-                console.log(user)
                 return { ...state, loggedInUser: user, loading: false }
             } else {
                 localStorage.removeItem("chat-app")
@@ -123,10 +131,11 @@ const userSlice = createSlice({
             }
         })
         builder.addCase(loginThunk.rejected, (state, action) => {
+            localStorage.removeItem("chat-app")
             return { ...state, errMessage: action.payload, loading: false }
         })
 
-
+        // all users
         builder.addCase(allUsersThunk.pending, (state) => {
             return { ...state, loading: true }
         })
@@ -138,6 +147,7 @@ const userSlice = createSlice({
         })
     }
 })
+
 export const {
     selectReceiver,
     updateActiveStatus,
@@ -145,4 +155,5 @@ export const {
     logoutUser,
     autoLogin
 } = userSlice.actions
+
 export default userSlice.reducer

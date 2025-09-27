@@ -1,12 +1,20 @@
-import React from 'react';
+import React from 'react'
 import { useSelector } from 'react-redux';
 import Typing from './Typing/Typing';
+import OptionsModal from './modal';
+
 
 const Text = ({ textDetails, img }) => {
     const { loggedInUser } = useSelector(state => state.users)
     const senderIsTheUser = loggedInUser?._id === textDetails?.sender?._id
+
+    // modal state
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
     return (
-        <div className={`flex items-end ${senderIsTheUser ? "justify-end" : ""} px-4 max-w-full m-2 cursor-pointer`}>
+        <div className={`flex items-center ${senderIsTheUser ? "justify-end" : ""} px-4 max-w-full m-2 cursor-pointer`}>
             <div className={`w-[40px] h-[40px] rounded-full overflow-hidden bg-red-500 mr-4 ${senderIsTheUser ? "order-2" : ''}`}>
                 <img src={textDetails?.sender.profileImg} alt="" />
             </div>
@@ -25,8 +33,19 @@ const Text = ({ textDetails, img }) => {
                     //             ""
                 }
             </div>
+            <span onClick={handleOpen} className='flex items-center w-[30px]' ><img src='/more.png' /></span>
+
+            <OptionsModal textDetails={textDetails} open={open} setOpen={setOpen} handleClose={handleClose} />
+            {/* {console.log(textDetails)} */}
+
         </div>
     );
 };
 
 export default Text;
+
+
+
+
+
+

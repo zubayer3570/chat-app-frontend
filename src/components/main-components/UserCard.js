@@ -19,7 +19,7 @@ const UserCard = ({ user }) => {
         for (let i = 0; i < conversations?.length; i++) {
             const conversation = conversations[i]
             console.log(conversation)
-            if (user._id === (conversation.userId_1._id === loggedInUser._id ? conversations[i].userId_2._id: conversations[i].userId_1._id)) {
+            if (conversation.userId_1._id === user._id || conversation.userId_2._id === user._id) {
                 console.log("found")
                 dispatch(getTextsThunk(conversation._id))
                 dispatch(selectConversation(conversation))

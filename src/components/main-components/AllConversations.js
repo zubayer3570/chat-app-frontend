@@ -14,12 +14,14 @@ const AllConversations = () => {
     const { conversations, selectedConversation } = useSelector(state => state.conversations)
 
     useEffect(() => {
-        getSocket() && getSocket() && getSocket().on("new_conversation", (newConversation) => {
-            // console.log("new conv", newConversation)
-            dispatch(addNewConversation(newConversation))
+        getSocket() && getSocket().on("new_conversation", (data) => {
+            console.log("new conv_f", data)
+            dispatch(addNewConversation(data))
         })
-        return () => getSocket() && getSocket().off("new_conversation")
-    }, [])
+        return () => {
+            getSocket() && getSocket().off("new_conversation")
+        }
+    }, [conversations])
 
     // useEffect(() => {
     //     getSocket() && getSocket().on("new_last_message", (data) => {

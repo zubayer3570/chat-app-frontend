@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendTextThunk, addText, receiverTyping, receiverStoppedTyping } from '../../features/textSlice';
+import { sendTextThunk, addText, receiverTyping, receiverStoppedTyping, messageDeletedUpdate, messageUpdated } from '../../features/textSlice';
 import Text from './Text';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../socket';
 import Spinner from './Spinner';
 import Typing from './Typing/Typing';
-import { newConversationThunk, updateLastMessage } from '../../features/conversationsSlice';
+import { updateLastMessage } from '../../features/conversationsSlice';
 
 
 const TextBox = () => {
@@ -41,11 +41,12 @@ const TextBox = () => {
             conversationId: selectedConversation?._id
         }
 
-        getSocket().emit("new_message", {message})
+        getSocket().emit("new_message", { message })
 
-        dispatch(sendTextThunk({message}))
+        dispatch(sendTextThunk({ message }))
 
         getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
+
         e.target.text.value = ""
     }
 
@@ -53,7 +54,6 @@ const TextBox = () => {
         getSocket() && getSocket().on("new_message", (data) => {
             dispatch(updateLastMessage(data.message))
             if (selectedConversation?._id === data.message.conversationId) {
-                // console.log("matched", data.message)
                 dispatch(addText(data.message))
             }
         })
@@ -80,6 +80,22 @@ const TextBox = () => {
             getSocket() && getSocket().off("typingStopped")
         }
     }, [receiver])
+
+    useEffect(() => {
+        getSocket() && getSocket().on("message_deleted", (data) => {
+            console.log("message deleted from socket", data)
+            dispatch(messageDeletedUpdate({ deletedMessage: data.deletedMessage }))
+        })
+        getSocket() && getSocket().on("message_updated", (data) => {
+            console.log("message updated from socket", data)
+            dispatch(messageUpdated({ updatedMessage: data.updatedMessage }))
+        })
+        return () => {
+            getSocket() && getSocket().off("message_deleted")
+        }
+    }, [texts])
+
+
 
     return (
         <>

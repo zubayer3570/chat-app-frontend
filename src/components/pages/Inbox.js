@@ -16,46 +16,46 @@ const Inbox = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const { loggedInUser, receiver, loading, authUserChecked } = useSelector(state => state.users)
+    const { loggedInUser, receiver, authUserChecked } = useSelector(state => state.users)
 
     useEffect(() => {
-        
         dispatch(autoLogin())
-
-        getSocket() && getSocket().on("connect", () => {
-            if (loggedInUser?._id) {
-                getSocket() && getSocket().emit("new_active_user", { userEmail: loggedInUser.email, socketID: getSocket().id })
-            }
-        })
-        getSocket() && getSocket().on("disconnect", () => {
-            getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
-        })
-
     }, [])
 
-    useEffect(() => {
-        if (window.innerWidth < 570) {
-            if (!window.location.pathname.includes("mobile")) {
-                navigate("/mobile/conversations")
-            }
-        }
-    }, [])
+    // useEffect(() => {
 
-    const requestPermission = async () => {
-        const permission = await Notification.requestPermission()
-        if (permission === "granted") {
-            const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
-            await api.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
-        }
-    }
+    //     getSocket() && getSocket().on("connect", () => {
+    //         if (loggedInUser?._id) {
+    //             getSocket() && getSocket().emit("new_active_user", { userEmail: loggedInUser.email, socketID: getSocket().id })
+    //         }
+    //     })
+        
+    //     getSocket() && getSocket().on("disconnect", () => {
+    //         getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
+    //     })
+
+    //     if (window.innerWidth < 570) {
+    //         if (!window.location.pathname.includes("mobile")) {
+    //             navigate("/mobile/conversations")
+    //         }
+    //     }
+
+    // }, [])
+
+    // const requestPermission = async () => {
+    //     const permission = await Notification.requestPermission()
+    //     if (permission === "granted") {
+    //         const token = await getToken(messaging, { vapidKey: "BBX6JaDHzapgmMupkHxIefyIGxKJZccE9D7TXp1OpQm4Dg7M_TKAzuoSPHUTCyPtYCdAZj76-T5Cv6ZPILf9_JI" })
+    //         await api.post('http://localhost:5000/update-notification-token', { email: loggedInUser.email, token })
+    //     }
+    // }
     
-    useEffect(() => {
-        requestPermission()
-    }, [])
+    // useEffect(() => {
+    //     requestPermission()
+    // }, [])
 
     useEffect(() => {
         if (!loggedInUser?._id && authUserChecked) {
-            console.log(loggedInUser)
             navigate('/login')
         }
     }, [authUserChecked])
