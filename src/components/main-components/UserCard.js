@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectReceiver } from '../../features/userSlice';
 import { clearAllTexts, getTextsThunk } from '../../features/textSlice';
-import { selectConversation } from '../../features/conversationsSlice';
+import { newConversationThunk, selectConversation } from '../../features/conversationsSlice';
 import { useNavigate } from 'react-router-dom';
 
 const UserCard = ({ user }) => {
@@ -11,10 +11,12 @@ const UserCard = ({ user }) => {
     const { loggedInUser } = useSelector(state => state.users)
     const { conversations } = useSelector(state => state.conversations)
 
-    const handleClick = () => {
+    const handleClick = async () => {
         dispatch(selectReceiver(user))
         dispatch(clearAllTexts())
         dispatch(selectConversation({}))
+
+        let convExists = false
 
         for (let i = 0; i < conversations?.length; i++) {
             const conversation = conversations[i]
@@ -23,8 +25,13 @@ const UserCard = ({ user }) => {
                 console.log("found")
                 dispatch(getTextsThunk(conversation._id))
                 dispatch(selectConversation(conversation))
+                convExists = true
                 break
             }
+        }
+
+        if (!convExists) {
+            dispatch(newConversationThunk({ sender: loggedInUser, receiver: user }))
         }
 
         if (window.location.pathname.includes("mobile")) {

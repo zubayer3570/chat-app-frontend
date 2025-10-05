@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../socket';
 import { logoutUser } from '../../features/userSlice';
 import { addNewConversation, getConversationsThunk, updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
+import { deriveConversationKey, exportPublicKey, generateECDHKeyPair, importPeerPublicKey, loadKeyPair, storeAESKey, storeKeyPair } from '../../utils/cryptoUtils';
 
 const AllConversations = () => {
     const navigate = useNavigate()
@@ -14,14 +15,61 @@ const AllConversations = () => {
     const { conversations, selectedConversation } = useSelector(state => state.conversations)
 
     useEffect(() => {
-        getSocket() && getSocket().on("new_conversation", (data) => {
-            console.log("new conv_f", data)
+        getSocket() && getSocket().on("new_conversation", async (data) => {
+            // e2e
+            // When starting a new conversation:
+            const myKeyPair = await generateECDHKeyPair();
+            // stored DH key pair
+            await storeKeyPair(data.conversation?._id, myKeyPair)
+            console.log("set the mykeypair: " + "myKeyPair" + data.conversation?._id)
+            // exported the key for transmission
+            const myPublicKeyB64 = await exportPublicKey(myKeyPair.publicKey);
+            // sending the key
+            getSocket().emit("dh_public_key_sender", {
+                conversationId: data.conversation?._id,
+                from: loggedInUser,
+                to: data.conversation.userId_2,
+                publicKey: myPublicKeyB64
+            });
+
+            // const aesKey = await retrieveKeyForConversation(selectedConversation._id); // Load from IndexedDB
+            // const { ciphertext, iv } = await encryptMessage(aesKey, e.target.text.value);
+
             dispatch(addNewConversation(data))
         })
         return () => {
             getSocket() && getSocket().off("new_conversation")
         }
     }, [conversations])
+
+
+    // e2e
+    useEffect(() => {
+        // this is on receiver end. getting the sender public key and generating ECDH key pairs and aes key:
+        getSocket() && getSocket().on("dh_public_key_sender", async ({ conversationId, from, publicKey }) => {
+            const peerKey = await importPeerPublicKey(publicKey);
+            const myKeyPair = await generateECDHKeyPair();
+            const aesKey = await deriveConversationKey(myKeyPair.privateKey, peerKey);
+            // Store aesKey securely, e.g., IndexedDB, mapped by conversationId
+            await storeAESKey(conversationId, aesKey)
+            const myPublicKeyB64 = await exportPublicKey(myKeyPair.publicKey);
+            getSocket() && getSocket().emit("dh_public_key_receiver", {conversationId, publicKey: myPublicKeyB64, to: from})
+        });
+
+        // this is on sender end. getting the reciver public key and generating + saving the aes key:
+        getSocket() && getSocket().on("dh_public_key_receiver", async ({ conversationId, from, publicKey }) => {
+            const peerKey = await importPeerPublicKey(publicKey);
+            const myKeyPair = await loadKeyPair(conversationId)
+            const aesKey = await deriveConversationKey(myKeyPair.privateKey, peerKey);
+            // Store aesKey securely, e.g., IndexedDB, mapped by conversationId
+            await storeAESKey(conversationId, aesKey)
+            console.log("aesKey on sender: ", aesKey)
+        });
+
+        return () => {
+            getSocket() && getSocket().off("dh_public_key")
+        }
+    }, [loggedInUser])
 
     // useEffect(() => {
     //     getSocket() && getSocket().on("new_last_message", (data) => {
@@ -34,8 +82,8 @@ const AllConversations = () => {
     //     return () => getSocket() && getSocket().removeListener("new_last_message")
     // }, [])
 
-    useEffect(()=> {
-        dispatch(getConversationsThunk({userId: loggedInUser._id}))
+    useEffect(() => {
+        dispatch(getConversationsThunk({ userId: loggedInUser._id }))
     }, [loggedInUser])
 
     return (

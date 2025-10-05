@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getSocket } from "../socket";
 import { updateLastMessage } from "./conversationsSlice";
 import { api } from "../api"
+import { decryptMessage, loadAESKey } from "../utils/cryptoUtils";
 
 export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, { getState, dispatch }) => {
     try {
@@ -14,7 +15,12 @@ export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, {
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationId) => {
     const res = await api.post("http://localhost:5000/get-texts", { conversationId })
-    return res.data
+    const aes_key = await loadAESKey(conversationId)
+    const data = await Promise.all(res.data.map(async em => {
+        const text = await decryptMessage(aes_key, em.text, em.iv)
+        return { ...em, text }
+    }))
+    return data
 })
 
 export const deleteTextThunk = createAsyncThunk("deleteTextThunk", async (textDetails) => {
@@ -22,10 +28,17 @@ export const deleteTextThunk = createAsyncThunk("deleteTextThunk", async (textDe
     return res.data
 })
 
-export const updateTextThunk = createAsyncThunk("udpateTextThunk", async ({textDetails, text}) => {
+export const updateTextThunk = createAsyncThunk("udpateTextThunk", async ({ textDetails, text }) => {
     console.log(text)
     const res = await api.post("http://localhost:5000/update-text", { textDetails, text })
     return res.data
+})
+
+export const addTextThunk = createAsyncThunk("addTextThunk", async (message) => {
+    console.log("addTextThunkkkkkkkkkkkkkkk", message.conversationId)
+    const aes_key = await loadAESKey(message.conversationId)
+    const text = await decryptMessage(aes_key, message.text, message.iv)
+    return { ...message, text }
 })
 
 const textSlice = createSlice({
@@ -36,9 +49,6 @@ const textSlice = createSlice({
         loading: false
     },
     reducers: {
-        addText: (state, action) => {
-            return { ...state, texts: [...state.texts, action.payload] }
-        },
         clearAllTexts: (state, action) => {
             return { ...state, texts: [] }
         },
@@ -52,7 +62,7 @@ const textSlice = createSlice({
             const { updatedMessage } = payload
             console.log(updatedMessage)
             const newTexts = state.texts.map(text => {
-                if (text._id == updatedMessage._id){
+                if (text._id == updatedMessage._id) {
                     return updatedMessage
                 } else {
                     return text
@@ -76,10 +86,11 @@ const textSlice = createSlice({
         })
 
         builder.addCase(sendTextThunk.fulfilled, (state, action) => {
-            // console.log(action.payload)
-            // return { ...state, texts: [...state.texts, state.texts[0]] }
-            // return { ...state, texts: [...state.texts, action.payload.message] }
             return state
+        })
+
+        builder.addCase(addTextThunk.fulfilled, (state, action) => {
+            return { ...state, texts: [...state.texts, { ...action.payload }] }
         })
 
         // builder.addCase(deleteTextThunk.fulfilled, (state, action) => {
@@ -91,12 +102,11 @@ const textSlice = createSlice({
 })
 
 export const {
-    addText,
     clearAllTexts,
     receiverTyping,
     receiverStoppedTyping,
     messageDeletedUpdate,
-    messageUpdated
+    messageUpdated,
 } = textSlice.actions
 
 export default textSlice.reducer

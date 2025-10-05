@@ -2,6 +2,16 @@ import { api } from "../api"
 
 const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
+
+export const newConversationThunk = createAsyncThunk("newConversationThunk", async ({ sender, receiver }) => {
+    try {
+        const res = await api.post("http://localhost:5000/create-new-conversation", { sender, receiver })
+        return res.data
+    } catch (err) {
+        console.log(err)
+    }
+})
+
 export const getConversationsThunk = createAsyncThunk("getConversationsThunk", async ({ userId }) => {
     try {
         const res = await api.post("http://localhost:5000/get-conversations", { userId })
@@ -32,7 +42,7 @@ const conversationsSlice = createSlice({
             return { ...state, selectedConversation: action.payload }
         },
         addNewConversation: (state, action) => {
-            console.log("action payload", action.payload)
+            // console.log("action payload", action.payload)
             return { ...state, selectedConversation: action.payload.conversation, conversations: [action.payload.conversation, ...state.conversations] }
         },
         updateLastMessage: (state, action) => {

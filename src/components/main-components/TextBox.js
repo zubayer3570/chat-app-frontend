@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sendTextThunk, addText, receiverTyping, receiverStoppedTyping, messageDeletedUpdate, messageUpdated } from '../../features/textSlice';
+import { sendTextThunk, addText, receiverTyping, receiverStoppedTyping, messageDeletedUpdate, messageUpdated, addTextThunk } from '../../features/textSlice';
 import Text from './Text';
 import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
@@ -8,13 +8,14 @@ import { getSocket } from '../../socket';
 import Spinner from './Spinner';
 import Typing from './Typing/Typing';
 import { updateLastMessage } from '../../features/conversationsSlice';
+import { encryptMessage, exportPublicKey, generateECDHKeyPair, loadAESKey } from '../../utils/cryptoUtils';
 
 
 const TextBox = () => {
     let userTyping = false;
     const navigate = useNavigate()
     const { loggedInUser, receiver } = useSelector(state => state.users)
-    const { selectedConversation } = useSelector(state => state.conversations)
+    const { selectedConversation, conversations } = useSelector(state => state.conversations)
     const { texts, loading, typingReceiver } = useSelector(state => state.texts)
     const dispatch = useDispatch()
 
@@ -30,19 +31,28 @@ const TextBox = () => {
         }
     }
 
-    const handleSend = (e) => {
+
+    const handleSend = async (e) => {
         e.preventDefault()
+
+        const aes_key = await loadAESKey(selectedConversation._id)
+
+        const {ciphertext, iv} = await encryptMessage(aes_key, e.target.text.value)
 
         const message = {
             sender: loggedInUser,
-            receiver: receiver,
-            text: e.target.text.value,
-            unread: true,
-            conversationId: selectedConversation?._id
+            receiver,
+            conversationId: selectedConversation?._id,
+            text: ciphertext, // ciphertext
+            iv,
+            isEncrypted: true,
+            unread: true
         }
 
-        getSocket().emit("new_message", { message })
+        console.log(message)
 
+
+        getSocket().emit("new_message", { message })
         dispatch(sendTextThunk({ message }))
 
         getSocket() && getSocket().emit("typingStopped", { typingUser: loggedInUser, receiver })
@@ -54,7 +64,7 @@ const TextBox = () => {
         getSocket() && getSocket().on("new_message", (data) => {
             dispatch(updateLastMessage(data.message))
             if (selectedConversation?._id === data.message.conversationId) {
-                dispatch(addText(data.message))
+                dispatch(addTextThunk(data.message))
             }
         })
         return () => getSocket() && getSocket().removeListener("new_message")
