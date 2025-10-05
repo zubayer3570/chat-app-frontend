@@ -3,7 +3,7 @@ import { io } from 'socket.io-client'
 let socket = null
 
 export const connectSocket = (email) => {
-    socket = io("http://localhost:5000/", {
+    socket = io("https://chat-app-pzz6.onrender.com/", {
         autoConnect: false,
         query: {
             email

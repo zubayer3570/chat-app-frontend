@@ -6,7 +6,7 @@ import {api} from "../api"
 
 
 export const signupThunk = createAsyncThunk("signupThunk", async (formData, { dispatch }) => {
-    const res = await api.post("http://localhost:5000/signup", formData)
+    const res = await api.post("https://chat-app-pzz6.onrender.com/signup", formData)
     dispatch(setAllConversations([]))
     console.log("slice", res)
     return res.data
@@ -14,7 +14,7 @@ export const signupThunk = createAsyncThunk("signupThunk", async (formData, { di
 
 export const loginThunk = createAsyncThunk("loginThunk", async (userData, { dispatch, rejectWithValue }) => {
     try {
-        const res = await api.post("http://localhost:5000/login", userData)
+        const res = await api.post("https://chat-app-pzz6.onrender.com/login", userData)
         return res.data
     } catch (err) {
         return rejectWithValue(err.response.data.message)
@@ -22,7 +22,7 @@ export const loginThunk = createAsyncThunk("loginThunk", async (userData, { disp
 })
 
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
-    const { data } = await api.get("http://localhost:5000/all-users", {headers: {Authorization: "Bearer " + JSON.parse(localStorage.getItem("chat-app")).accessToken} })
+    const { data } = await api.get("https://chat-app-pzz6.onrender.com/all-users", {headers: {Authorization: "Bearer " + JSON.parse(localStorage.getItem("chat-app")).accessToken} })
     return data;
 })
 
