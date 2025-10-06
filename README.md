@@ -1,6 +1,6 @@
 # ZEXT-SEC - End-to-End Encrypted Realtime Chat Application
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://chat-app-89528.web.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](http://localhost:3000)
 [![Frontend Repo](https://img.shields.io/badge/Frontend-Repo-blue)](https://github.com/zubayer3570/chat-app-frontend)
 [![Backend Repo](https://img.shields.io/badge/Backend-Repo-orange)](https://github.com/zubayer3570/chat-app-backend)
 
@@ -107,7 +107,7 @@ npm install
 
 3. Create a `.env` file in the root directory:
 ```env
-REACT_APP_SERVER_URL=http://localhost:5000
+REACT_APP_SERVER_URL=http://localhost:3000
 ```
 
 4. Start the development server:
@@ -120,6 +120,6 @@ The application will be available at `http://localhost:3000`
 
 ## 🔗 Links
 
-- **Live Demo**: [https://chat-app-89528.web.app](https://chat-app-89528.web.app)
+- **Live Demo**: [http://localhost:3000](http://localhost:3000)
 - **Frontend Repository**: [https://github.com/zubayer3570/chat-app-frontend](https://github.com/zubayer3570/chat-app-frontend)
 - **Backend Repository**: [https://github.com/zubayer3570/chat-app-backend](https://github.com/zubayer3570/chat-app-backend)

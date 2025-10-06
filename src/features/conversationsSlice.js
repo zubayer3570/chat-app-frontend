@@ -5,7 +5,7 @@ const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
 export const newConversationThunk = createAsyncThunk("newConversationThunk", async ({ sender, receiver }) => {
     try {
-        const res = await api.post("https://chat-app-pzz6.onrender.com/create-new-conversation", { sender, receiver })
+        const res = await api.post("http://localhost:5000/create-new-conversation", { sender, receiver })
         return res.data
     } catch (err) {
         console.log(err)
@@ -14,7 +14,7 @@ export const newConversationThunk = createAsyncThunk("newConversationThunk", asy
 
 export const getConversationsThunk = createAsyncThunk("getConversationsThunk", async ({ userId }) => {
     try {
-        const res = await api.post("https://chat-app-pzz6.onrender.com/get-conversations", { userId })
+        const res = await api.post("http://localhost:5000/get-conversations", { userId })
         return res.data
     } catch (err) {
         console.log(err)
@@ -22,7 +22,7 @@ export const getConversationsThunk = createAsyncThunk("getConversationsThunk", a
 })
 
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (lastMessage) => {
-    const { data } = await api.post("https://chat-app-pzz6.onrender.com/update-unread", { lastMessage })
+    const { data } = await api.post("http://localhost:5000/update-unread", { lastMessage })
     return data.updatedMessage;
 })
 

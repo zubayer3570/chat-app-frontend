@@ -6,7 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../socket';
 import { logoutUser } from '../../features/userSlice';
 import { addNewConversation, getConversationsThunk, updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
-import { deriveConversationKey, exportPublicKey, generateECDHKeyPair, importPeerPublicKey, loadKeyPair, storeAESKey, storeKeyPair } from '../../utils/cryptoUtils';
+import { deriveConversationKey, digestHex, exportPublicKey, generateECDHKeyPair, hashAESKeyToHex, hashPublicKeySpkiHex, importPeerPublicKey, loadKeyPair, storeAESKey, storeKeyPair } from '../../utils/cryptoUtils';
+
+const dhProcessed = new Set();
+
+
 
 const AllConversations = () => {
     const navigate = useNavigate()
@@ -14,60 +18,110 @@ const AllConversations = () => {
     const { loggedInUser } = useSelector(state => state.users)
     const { conversations, selectedConversation } = useSelector(state => state.conversations)
 
-    useEffect(() => {
-        getSocket() && getSocket().on("new_conversation", async (data) => {
-            // e2e
-            // When starting a new conversation:
-            const myKeyPair = await generateECDHKeyPair();
-            // stored DH key pair
-            await storeKeyPair(data.conversation?._id, myKeyPair)
-            console.log("set the mykeypair: " + "myKeyPair" + data.conversation?._id)
-            // exported the key for transmission
-            const myPublicKeyB64 = await exportPublicKey(myKeyPair.publicKey);
-            // sending the key
-            getSocket().emit("dh_public_key_sender", {
-                conversationId: data.conversation?._id,
-                from: loggedInUser,
-                to: data.conversation.userId_2,
-                publicKey: myPublicKeyB64
-            });
-
-            // const aesKey = await retrieveKeyForConversation(selectedConversation._id); // Load from IndexedDB
-            // const { ciphertext, iv } = await encryptMessage(aesKey, e.target.text.value);
-
-            dispatch(addNewConversation(data))
-        })
-        return () => {
-            getSocket() && getSocket().off("new_conversation")
-        }
-    }, [conversations])
-
-
     // e2e
     useEffect(() => {
-        // this is on receiver end. getting the sender public key and generating ECDH key pairs and aes key:
-        getSocket() && getSocket().on("dh_public_key_sender", async ({ conversationId, from, publicKey }) => {
-            const peerKey = await importPeerPublicKey(publicKey);
-            const myKeyPair = await generateECDHKeyPair();
-            const aesKey = await deriveConversationKey(myKeyPair.privateKey, peerKey);
-            // Store aesKey securely, e.g., IndexedDB, mapped by conversationId
-            await storeAESKey(conversationId, aesKey)
-            const myPublicKeyB64 = await exportPublicKey(myKeyPair.publicKey);
-            getSocket() && getSocket().emit("dh_public_key_receiver", {conversationId, publicKey: myPublicKeyB64, to: from})
+
+
+        getSocket() && getSocket().on("new_conversation", async (data) => {
+            try {
+
+                dispatch(addNewConversation(data));
+
+                if (data.conversation.userId_1._id != loggedInUser._id) {
+                    return
+                }
+
+                const conversationId = data?.conversation?._id;
+                if (!conversationId) return;
+
+                const myKeyPair = await generateECDHKeyPair();
+                await storeKeyPair(conversationId, myKeyPair);
+
+                // Export SPKI and compute deterministic hash for logging
+                const spki = await window.crypto.subtle.exportKey("spki", myKeyPair.publicKey);
+                const myPubB64 = btoa(String.fromCharCode(...new Uint8Array(spki)));
+                const senderPubHash = await digestHex(spki);
+                console.log("[E2EE] Sender pub SPKI hash:", senderPubHash); // should match receiver log later [web:176]
+
+                // Transmit
+                getSocket().emit("dh_public_key_sender", {
+                    conversationId,
+                    from: loggedInUser,
+                    to: data?.conversation?.userId_2,
+                    publicKey: myPubB64
+                });
+            } catch (e) {
+                console.error("new_conversation failed:", e);
+            }
         });
 
-        // this is on sender end. getting the reciver public key and generating + saving the aes key:
-        getSocket() && getSocket().on("dh_public_key_receiver", async ({ conversationId, from, publicKey }) => {
-            const peerKey = await importPeerPublicKey(publicKey);
-            const myKeyPair = await loadKeyPair(conversationId)
-            const aesKey = await deriveConversationKey(myKeyPair.privateKey, peerKey);
-            // Store aesKey securely, e.g., IndexedDB, mapped by conversationId
-            await storeAESKey(conversationId, aesKey)
-            console.log("aesKey on sender: ", aesKey)
+
+
+        getSocket() && getSocket().on("dh_public_key_sender", async ({ conversationId, from, publicKey, to }) => {
+            try {
+                if (!conversationId || !publicKey) return;
+
+                // Import sender’s SPKI, re-export to SPKI, hash to verify transport integrity
+                const peerKey = await importPeerPublicKey(publicKey);
+                const spki = await window.crypto.subtle.exportKey("spki", peerKey);
+                const recvPubHash = await digestHex(spki);
+                console.log("[E2EE] Receiver-saw Sender pub SPKI hash:", recvPubHash); // compare to sender’s log [web:176]
+
+                // Ensure receiver has a persistent pair for this conversation
+                let myPair = await loadKeyPair(conversationId);
+                if (!myPair) {
+                    myPair = await generateECDHKeyPair();
+                    await storeKeyPair(conversationId, myPair);
+                }
+
+                // Derive AES and log its hash (raw)
+                const aesKey = await deriveConversationKey(myPair.privateKey, peerKey);
+                await storeAESKey(conversationId, aesKey);
+                const recvAesHash = await hashAESKeyToHex(aesKey);
+                console.log("[E2EE] Receiver derived AES hash:", recvAesHash); // should match sender’s later [web:133]
+
+                // Reply with receiver pubkey and log its SPKI hash too (optional)
+                const myPubHash = await hashPublicKeySpkiHex(myPair.publicKey);
+                console.log("[E2EE] Receiver pub SPKI hash (outbound):", myPubHash); // diagnostic [web:176]
+                const myPubB64 = await exportPublicKey(myPair.publicKey);
+                getSocket().emit("dh_public_key_receiver", { conversationId, publicKey: myPubB64, to: from });
+            } catch (e) {
+                console.error("dh_public_key_sender handler failed:", e);
+            }
+        });
+
+
+
+        getSocket() && getSocket().on("dh_public_key_receiver", async ({ conversationId, from, publicKey, to }) => {
+            try {
+                if (!conversationId || !publicKey) return;
+
+                const myPair = await loadKeyPair(conversationId);
+                if (!myPair) {
+                    console.error("Missing initiator key pair for conversation:", conversationId);
+                    return;
+                }
+
+                // Import receiver’s pubkey and log its SPKI hash for comparison
+                const peerKey = await importPeerPublicKey(publicKey);
+                const spki = await window.crypto.subtle.exportKey("spki", peerKey);
+                const senderSawRecvPubHash = await digestHex(spki);
+                console.log("[E2EE] Sender-saw Receiver pub SPKI hash:", senderSawRecvPubHash); // compare with receiver outbound log [web:176]
+
+                // Derive AES and log its hash; should match the receiver’s derived AES hash
+                const aesKey = await deriveConversationKey(myPair.privateKey, peerKey);
+                await storeAESKey(conversationId, aesKey);
+                const senderAesHash = await hashAESKeyToHex(aesKey);
+                console.log("[E2EE] Sender derived AES hash:", senderAesHash); // must equal receiver derived AES hash [web:133]
+            } catch (e) {
+                console.error("dh_public_key_receiver handler failed:", e);
+            }
         });
 
         return () => {
-            getSocket() && getSocket().off("dh_public_key")
+            getSocket() && getSocket().off("dh_public_key_sender")
+            getSocket() && getSocket().off("dh_public_key_receiver")
+            getSocket() && getSocket().off("new_conversation")
         }
     }, [loggedInUser])
 
