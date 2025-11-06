@@ -1,4 +1,5 @@
 import { api } from "../api"
+import { deriveConversationKey, importPeerPublicKey, jwkToCryptoKeyPair, storeAESKey } from "../utils/cryptoUtils";
 
 const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
@@ -24,6 +25,40 @@ export const getConversationsThunk = createAsyncThunk("getConversationsThunk", a
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (lastMessage) => {
     const { data } = await api.post("http://localhost:5000/update-unread", { lastMessage })
     return data.updatedMessage;
+})
+
+export const getUsedPreKeysThunk = createAsyncThunk("getUsedPreKeysThunk", async ({ user }) => {
+    try {
+        const res = await api.post("http://localhost:5000/get-used-prekeys", { user })
+        const { usedPreKeys } = res.data
+        console.log(usedPreKeys)
+        const storedPreKeys = JSON.parse(localStorage.getItem("preKeys"))
+        console.log("storedPreKeys", storedPreKeys)
+
+        if (Object.keys(storedPreKeys).length > 0) {
+            await Promise.all(usedPreKeys.map(async usedPreKey => {
+                console.log("here I aaaaaaaam");
+
+                const jwk = storedPreKeys[usedPreKey.preKey]; // get the JWK from object
+                if (!jwk) return; // skip if not found
+
+                const keyPair = await jwkToCryptoKeyPair(jwk);
+                const senderPublicKey = await importPeerPublicKey(usedPreKey.senderPubKey);
+                const aesKey = await deriveConversationKey(keyPair.privateKey, senderPublicKey);
+
+                await storeAESKey(usedPreKey.conversationId, aesKey);
+
+                // Optionally remove the key from object **after processing**
+                delete storedPreKeys[usedPreKey.preKey];
+            }));
+        }
+
+        localStorage.setItem("preKeys", JSON.stringify(storedPreKeys))
+
+        return res.data
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 
@@ -52,11 +87,11 @@ const conversationsSlice = createSlice({
                     return conversation
                 } else {
                     targetIndex = index
-                    return 
+                    return
                 }
             })
             const targetConversation = state.conversations[targetIndex]
-            return { ...state, conversations: [{...targetConversation, lastMessage: action.payload }, ...tempConversation] }
+            return { ...state, conversations: [{ ...targetConversation, lastMessage: action.payload }, ...tempConversation] }
         },
     },
     extraReducers: (builder) => {
@@ -80,11 +115,19 @@ const conversationsSlice = createSlice({
     }
 })
 
-export const { 
-    selectConversation, 
-    setAllConversations, 
-    updateLastMessage, 
+export const {
+    selectConversation,
+    setAllConversations,
+    updateLastMessage,
     addNewConversation
 } = conversationsSlice.actions
 
 export default conversationsSlice.reducer
+
+
+
+
+
+
+// MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE2hxnLtYHX+x7UisgCLu9X3I5k3jWaI+4ps0c5CT0zDhSy8Faa+unE22VCUT2sIvAZjXno0Z7+jCNctzMCQDDzg==
+// MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAED9PapqK+mtDR8NxoBZOyZl83yiW6UO/ocMcnRrdU5oXZzmeBblV4KSpzRXz3V1+eAw/jZFqhChHYq0oomLG35A==

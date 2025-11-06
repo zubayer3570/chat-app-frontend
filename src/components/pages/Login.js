@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginThunk } from '../../features/userSlice';
 import Spinner from '../main-components/Spinner';
+import { cryptoToJWKKeyPair, exportPublicKey, generateECDHKeyPair } from '../../utils/cryptoUtils';
 
 const Login = () => {
 
@@ -10,16 +11,31 @@ const Login = () => {
     const navigate = useNavigate()
     const { loggedInUser, loading, errMessage } = useSelector(state => state.users)
     
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
+
+        const prekeys = []
+        const stored_prekeys = {}
+
+        for (let i = 0; i < 10; i++){
+            const keypair = await generateECDHKeyPair()
+            const prekey = await exportPublicKey(keypair.publicKey)
+            prekeys.push(prekey)
+            // to be stored locally
+            stored_prekeys[prekey] = await cryptoToJWKKeyPair(keypair)
+        }
+
+        localStorage.setItem("preKeys", JSON.stringify(stored_prekeys))
 
         const data = {
             email: e.target.email.value,
             password: e.target.password.value,
+            prekeys
         }
 
         dispatch(loginThunk(data))
     }
+
 
     useEffect(() => {
         if (loggedInUser?._id) {

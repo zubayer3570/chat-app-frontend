@@ -35,7 +35,11 @@ const TextBox = () => {
     const handleSend = async (e) => {
         e.preventDefault()
 
+        console.log("selectedConversation._id", selectedConversation._id)
+
         const aes_key = await loadAESKey(selectedConversation._id)
+
+        console.log("aes_key", aes_key)
 
         const {ciphertext, iv} = await encryptMessage(aes_key, e.target.text.value)
 

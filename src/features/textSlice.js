@@ -29,13 +29,11 @@ export const deleteTextThunk = createAsyncThunk("deleteTextThunk", async (textDe
 })
 
 export const updateTextThunk = createAsyncThunk("udpateTextThunk", async ({ textDetails, text }) => {
-    console.log(text)
     const res = await api.post("http://localhost:5000/update-text", { textDetails, text })
     return res.data
 })
 
 export const addTextThunk = createAsyncThunk("addTextThunk", async (message) => {
-    console.log("addTextThunkkkkkkkkkkkkkkk", message.conversationId)
     const aes_key = await loadAESKey(message.conversationId)
     const text = await decryptMessage(aes_key, message.text, message.iv)
     return { ...message, text }

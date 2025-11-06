@@ -5,7 +5,7 @@ import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../socket';
 import { logoutUser } from '../../features/userSlice';
-import { addNewConversation, getConversationsThunk, updateLastMessage, updateUnreadThunk } from '../../features/conversationsSlice';
+import { addNewConversation, getConversationsThunk, updateLastMessage, updateUnreadThunk, getUsedPreKeysThunk } from '../../features/conversationsSlice';
 import { deriveConversationKey, digestHex, exportPublicKey, generateECDHKeyPair, hashAESKeyToHex, hashPublicKeySpkiHex, importPeerPublicKey, loadKeyPair, storeAESKey, storeKeyPair } from '../../utils/cryptoUtils';
 
 const dhProcessed = new Set();
@@ -17,6 +17,11 @@ const AllConversations = () => {
     const dispatch = useDispatch()
     const { loggedInUser } = useSelector(state => state.users)
     const { conversations, selectedConversation } = useSelector(state => state.conversations)
+
+
+    useEffect(() => {
+        loggedInUser._id && dispatch(getUsedPreKeysThunk({ user: loggedInUser }))
+    }, [loggedInUser])
 
     // e2e
     useEffect(() => {
@@ -37,18 +42,14 @@ const AllConversations = () => {
                 const myKeyPair = await generateECDHKeyPair();
                 await storeKeyPair(conversationId, myKeyPair);
 
-                // Export SPKI and compute deterministic hash for logging
-                const spki = await window.crypto.subtle.exportKey("spki", myKeyPair.publicKey);
-                const myPubB64 = btoa(String.fromCharCode(...new Uint8Array(spki)));
-                const senderPubHash = await digestHex(spki);
-                console.log("[E2EE] Sender pub SPKI hash:", senderPubHash); // should match receiver log later [web:176]
+                const publicKey = await exportPublicKey(myKeyPair.publicKey)
 
                 // Transmit
                 getSocket().emit("dh_public_key_sender", {
                     conversationId,
                     from: loggedInUser,
                     to: data?.conversation?.userId_2,
-                    publicKey: myPubB64
+                    publicKey
                 });
             } catch (e) {
                 console.error("new_conversation failed:", e);
@@ -62,20 +63,16 @@ const AllConversations = () => {
                 if (!conversationId || !publicKey) return;
 
                 // Import sender’s SPKI, re-export to SPKI, hash to verify transport integrity
-                const peerKey = await importPeerPublicKey(publicKey);
-                const spki = await window.crypto.subtle.exportKey("spki", peerKey);
-                const recvPubHash = await digestHex(spki);
-                console.log("[E2EE] Receiver-saw Sender pub SPKI hash:", recvPubHash); // compare to sender’s log [web:176]
+                const reciverPubKey = await importPeerPublicKey(publicKey);
+                // const spki = await window.crypto.subtle.exportKey("spki", reciverPubKey);
+                // const recvPubHash = await digestHex(spki);
+                // console.log("[E2EE] Receiver-saw Sender pub SPKI hash:", recvPubHash); // compare to sender’s log [web:176]
 
-                // Ensure receiver has a persistent pair for this conversation
-                let myPair = await loadKeyPair(conversationId);
-                if (!myPair) {
-                    myPair = await generateECDHKeyPair();
-                    await storeKeyPair(conversationId, myPair);
-                }
+                const myPair = await generateECDHKeyPair();
+                await storeKeyPair(conversationId, myPair);
 
                 // Derive AES and log its hash (raw)
-                const aesKey = await deriveConversationKey(myPair.privateKey, peerKey);
+                const aesKey = await deriveConversationKey(myPair.privateKey, reciverPubKey);
                 await storeAESKey(conversationId, aesKey);
                 const recvAesHash = await hashAESKeyToHex(aesKey);
                 console.log("[E2EE] Receiver derived AES hash:", recvAesHash); // should match sender’s later [web:133]
