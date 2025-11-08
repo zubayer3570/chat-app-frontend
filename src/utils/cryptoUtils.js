@@ -183,6 +183,23 @@ export async function hashPublicKeySpkiHex(pubKey) {
 
 
 
+export async function generateAndStorePrekeys() {
+  const prekeys = []
+  const stored_prekeys = {}
+
+  for (let i = 0; i < 10; i++) {
+    const keypair = await generateECDHKeyPair()
+    const prekey = await exportPublicKey(keypair.publicKey)
+    prekeys.push(prekey)
+    // to be stored locally
+    stored_prekeys[prekey] = await cryptoToJWKKeyPair(keypair)
+  }
+
+  localStorage.setItem("preKeys", JSON.stringify(stored_prekeys))
+  return prekeys
+}
+
+
 
 // --- tiny helpers
 function assertEqual(a, b, msg) {

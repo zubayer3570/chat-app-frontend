@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-    baseURL: "http://localhost:5000",
+    baseURL: "https://chat-app-pzz6.onrender.com",
     withCredentials: true
 })
 
@@ -15,10 +15,10 @@ api.interceptors.response.use(
             originalRequest._retry = true
 
             try{
-                const res = await api.post("http://localhost:5000/refresh")
+                const res = await api.post("https://chat-app-pzz6.onrender.com/refresh")
                 const newAccessToken = res.data.accessToken
 
-                // console.log("newnewnew", newAccessToken)
+                console.log("newnewnew", newAccessToken)
 
                 api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`

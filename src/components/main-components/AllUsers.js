@@ -14,7 +14,12 @@ const AllUsers = () => {
 
     // console.log(allUsers)
 
-    useEffect(() => { dispatch(allUsersThunk()) }, [])
+    useEffect(() => {
+        if (loggedInUser._id) {
+            dispatch(allUsersThunk())
+        }
+    }, [loggedInUser])
+
     const handleLogout = () => {
         dispatch(logoutUser())
         navigate("/login")

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { signupThunk } from '../../features/userSlice';
 import Spinner from '../main-components/Spinner';
+import { generateAndStorePrekeys } from '../../utils/cryptoUtils';
 
 const Signup = () => {
     const navigate = useNavigate()
@@ -10,7 +11,7 @@ const Signup = () => {
     const { loggedInUser, loading } = useSelector(state => state.users)
 
     // signup handling function
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault()
         const formData = new FormData()
         formData.append("profileImg", e.target.profileImg.files[0])
@@ -18,6 +19,8 @@ const Signup = () => {
         formData.append("email", e.target.email.value)
         formData.append("password", e.target.password.value)
         formData.append("active", false)
+        const prekeys = await generateAndStorePrekeys()
+        formData.append("prekeys", prekeys)
         dispatch(signupThunk(formData))
     }
 

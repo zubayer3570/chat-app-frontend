@@ -6,7 +6,7 @@ const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
 export const newConversationThunk = createAsyncThunk("newConversationThunk", async ({ sender, receiver }) => {
     try {
-        const res = await api.post("http://localhost:5000/create-new-conversation", { sender, receiver })
+        const res = await api.post("https://chat-app-pzz6.onrender.com/create-new-conversation", { sender, receiver })
         return res.data
     } catch (err) {
         console.log(err)
@@ -15,7 +15,7 @@ export const newConversationThunk = createAsyncThunk("newConversationThunk", asy
 
 export const getConversationsThunk = createAsyncThunk("getConversationsThunk", async ({ userId }) => {
     try {
-        const res = await api.post("http://localhost:5000/get-conversations", { userId })
+        const res = await api.post("https://chat-app-pzz6.onrender.com/get-conversations", { userId })
         return res.data
     } catch (err) {
         console.log(err)
@@ -23,17 +23,17 @@ export const getConversationsThunk = createAsyncThunk("getConversationsThunk", a
 })
 
 export const updateUnreadThunk = createAsyncThunk("updateUnreadThunk", async (lastMessage) => {
-    const { data } = await api.post("http://localhost:5000/update-unread", { lastMessage })
+    const { data } = await api.post("https://chat-app-pzz6.onrender.com/update-unread", { lastMessage })
     return data.updatedMessage;
 })
 
 export const getUsedPreKeysThunk = createAsyncThunk("getUsedPreKeysThunk", async ({ user }) => {
     try {
-        const res = await api.post("http://localhost:5000/get-used-prekeys", { user })
+        const res = await api.post("https://chat-app-pzz6.onrender.com/get-used-prekeys", { user })
         const { usedPreKeys } = res.data
-        console.log(usedPreKeys)
+        // console.log(usedPreKeys)
         const storedPreKeys = JSON.parse(localStorage.getItem("preKeys"))
-        console.log("storedPreKeys", storedPreKeys)
+        // console.log("storedPreKeys", storedPreKeys)
 
         if (Object.keys(storedPreKeys).length > 0) {
             await Promise.all(usedPreKeys.map(async usedPreKey => {
