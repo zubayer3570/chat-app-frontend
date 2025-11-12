@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { signupThunk } from '../../features/userSlice';
+import { setUserLoading, signupThunk } from '../../features/userSlice';
 import Spinner from '../main-components/Spinner';
 import { generateAndStorePrekeys } from '../../utils/cryptoUtils';
 
@@ -20,7 +20,7 @@ const Signup = () => {
         formData.append("password", e.target.password.value)
         formData.append("active", false)
         const prekeys = await generateAndStorePrekeys()
-        formData.append("prekeys", prekeys)
+        formData.append("prekeys", JSON.stringify(prekeys))
         dispatch(signupThunk(formData))
     }
 
@@ -35,9 +35,10 @@ const Signup = () => {
     }
 
     useEffect(() => {
-        console.log(loggedInUser)
         if (loggedInUser?._id) {
             navigate("/", {state: {doNotVerifyUser: true}})
+        } else{
+            dispatch(setUserLoading(false))
         }
     }, [loggedInUser])
 

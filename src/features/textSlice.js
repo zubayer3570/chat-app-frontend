@@ -6,7 +6,7 @@ import { decryptMessage, loadAESKey } from "../utils/cryptoUtils";
 
 export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, { getState, dispatch }) => {
     try {
-        const res = await api.post("https://chat-app-pzz6.onrender.com/send-text", message)
+        const res = await api.post("http://localhost:5000/send-text", message)
         return res.data
     } catch (err) {
         console.log(err)
@@ -14,7 +14,7 @@ export const sendTextThunk = createAsyncThunk("sendTextThunk", async (message, {
 })
 
 export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversationId) => {
-    const res = await api.post("https://chat-app-pzz6.onrender.com/get-texts", { conversationId })
+    const res = await api.post("http://localhost:5000/get-texts", { conversationId })
     const aes_key = await loadAESKey(conversationId)
     const data = await Promise.all(res.data.map(async em => {
         const text = await decryptMessage(aes_key, em.text, em.iv)
@@ -24,12 +24,12 @@ export const getTextsThunk = createAsyncThunk("getTextsThunk", async (conversati
 })
 
 export const deleteTextThunk = createAsyncThunk("deleteTextThunk", async (textDetails) => {
-    const res = await api.post("https://chat-app-pzz6.onrender.com/delete-text", { textDetails })
+    const res = await api.post("http://localhost:5000/delete-text", { textDetails })
     return res.data
 })
 
 export const updateTextThunk = createAsyncThunk("udpateTextThunk", async ({ textDetails, text }) => {
-    const res = await api.post("https://chat-app-pzz6.onrender.com/update-text", { textDetails, text })
+    const res = await api.post("http://localhost:5000/update-text", { textDetails, text })
     return res.data
 })
 
