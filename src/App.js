@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import MobileAllConversations from './components/pages/MobilePages/MobileAllConversations';
 import MobileAllUsers from './components/pages/MobilePages/MobileAllUsers';
 import MobileTextbox from './components/pages/MobilePages/MobileTextbox';
-import Test from './components/main-components/Test';
 
 
 function App() {
@@ -29,7 +28,6 @@ function App() {
         {/* <Route element={<MobileAllConversations />} path='/mobile/conversations'></Route>
         <Route element={<MobileAllUsers />} path='/mobile/all-users'></Route>
         <Route element={<MobileTextbox />} path='/mobile/textbox'></Route> */}
-        <Route element={<Test />} path='/test'></Route>
       </Routes>
     </>
   );

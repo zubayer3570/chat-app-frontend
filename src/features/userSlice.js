@@ -21,7 +21,8 @@ export const loginThunk = createAsyncThunk("loginThunk", async (userData, { disp
 })
 
 export const allUsersThunk = createAsyncThunk("allUsersThunk", async () => {
-    const { data } = await api.get("http://localhost:5000/all-users", {headers: {Authorization: "Bearer " + JSON.parse(localStorage.getItem("chat-app")).accessToken} })
+    const Authorization = "Bearer " + JSON.parse(localStorage.getItem("chat-app")).accessToken
+    const { data } = await api.get("http://localhost:5000/all-users", {headers: {Authorization}})
     return data;
 })
 
@@ -33,7 +34,7 @@ const userSlice = createSlice({
         allUsers: [],
         errMessage: "",
         authUserChecked: false,
-        loading: true,
+        loading: false,
     },
     reducers: {
         selectReceiver: (state, action) => {

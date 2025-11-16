@@ -11,14 +11,11 @@ api.interceptors.response.use(
         const originalRequest = error.config
 
         if (error.response && error.response.status === 401 && !originalRequest._retry){
-            // console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhahahah")
             originalRequest._retry = true
 
             try{
                 const res = await api.post("http://localhost:5000/refresh")
                 const newAccessToken = res.data.accessToken
-
-                console.log("newnewnew", newAccessToken)
 
                 api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`

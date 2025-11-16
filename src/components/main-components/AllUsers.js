@@ -6,9 +6,10 @@ import style from '../../style.module.css'
 import { useNavigate } from 'react-router-dom';
 import { getSocket } from '../../socket';
 import Typing from './Typing/Typing';
+import Spinner from './Spinner';
 
 const AllUsers = () => {
-    const { loggedInUser, allUsers } = useSelector(state => state.users)
+    const { loggedInUser, allUsers, loading } = useSelector(state => state.users)
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -52,16 +53,23 @@ const AllUsers = () => {
             </div>
             <div onClick={() => navigate("/mobile/conversations")} className='lg:hidden text-white font-bold px-4 pt-4'>Back</div>
             <div className='font-bold text-white text-center pt-4 mb-2'> <span></span> All Users with Active Status</div>
-            <div className={"overflow-auto"}>
-                {
-                    allUsers?.map(user => {
-                        if (user?._id === loggedInUser?._id) {
-                            return
+            {
+                loading ?
+                    <div className='h-[70vh] flex justify-center items-center'>
+                        <Spinner />
+                    </div>
+                    :
+                    <div className={"overflow-auto"}>
+                        {
+                            allUsers?.map(user => {
+                                if (user?._id === loggedInUser?._id) {
+                                    return []
+                                }
+                                return <UserCard user={user} key={user?._id} />
+                            })
                         }
-                        return <UserCard user={user} key={user?._id} />
-                    })
-                }
-            </div>
+                    </div>
+            }
         </div>
     );
 };

@@ -10,7 +10,7 @@ const Login = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { loggedInUser, loading, errMessage } = useSelector(state => state.users)
-    
+
     const handleLogin = async (e) => {
         e.preventDefault()
 
@@ -31,7 +31,7 @@ const Login = () => {
             navigate("/")
         }
     }, [loggedInUser])
-    
+
 
     return (
         <div className='h-[80vh] w-full flex items-center justify-center px-4'>
@@ -45,7 +45,16 @@ const Login = () => {
                     <label className='text-[13px] text-white mt-2 ml-2'>Password</label>
                     <input name="password" className='grow h-[35px] rounded-full px-4 mb-2' type="password" />
                     <p className='text-red-500 mb-2' >{errMessage}</p>
-                    <button type="submit" className='grow h-[35px] rounded-full px-4 bg-2 text-white mb-2' value="login">Login</button>
+                    <button type="submit" className='grow h-[35px] rounded-full px-4 bg-2 text-white mb-2' value="login" disabled={loading && true} >
+                        {
+                            loading ?
+                                <span className='flex justify-center items-center'>
+                                    <Spinner />
+                                </span>
+                                :
+                                "Login"
+                        }
+                    </button>
                     <Link to="/signup" className='text-white' >Don't have an account? <span className='inline-block px-2 py-[2px] rounded-full bg-white text-test-3'>Signup</span></Link>
                 </form>
             </div>
