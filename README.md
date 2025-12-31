@@ -1,6 +1,6 @@
 # ZEXT-SEC - End-to-End Encrypted Realtime Chat Application
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](http://localhost:3000)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://chat-app-89528.web.app)
 [![Frontend Repo](https://img.shields.io/badge/Frontend-Repo-blue)](https://github.com/zubayer3570/chat-app-frontend)
 [![Backend Repo](https://img.shields.io/badge/Backend-Repo-orange)](https://github.com/zubayer3570/chat-app-backend)
 
