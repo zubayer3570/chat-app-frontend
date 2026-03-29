@@ -116,10 +116,3 @@ npm start
 ```
 
 The application will be available at `http://localhost:3000`
-
-
-## 🔗 Links
-
-- **Live Demo**: [http://localhost:3000](http://localhost:3000)
-- **Frontend Repository**: [https://github.com/zubayer3570/chat-app-frontend](https://github.com/zubayer3570/chat-app-frontend)
-- **Backend Repository**: [https://github.com/zubayer3570/chat-app-backend](https://github.com/zubayer3570/chat-app-backend)
